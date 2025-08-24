@@ -32,9 +32,9 @@ async function loadCanticos() {
         });
         
         createSections();
+        initializeCollapsibleSections(); // Chamar aqui para garantir que as seções existam
     } catch (error) {
-        console.error('Erro ao carregar cânticos:', error);
-        // Fallback para dados estáticos se o arquivo não existir
+        console.error("Erro ao carregar cânticos:", error);
         createFallbackSections();
     }
 }
@@ -159,11 +159,11 @@ function openPDFFromSearch(nome, categoria, arquivo) {
 
 // Inicializar seções recolhíveis
 function initializeCollapsibleSections() {
-    // Todos os quadros começam recolhidos
-    const sectionCards = document.querySelectorAll('.section-card');
-    sectionCards.forEach(card => {
-        card.classList.remove('expanded');
-    });
+    const sectionCards = document.querySelectorAll(".section-card");
+    if (sectionCards.length > 0) {
+        // Expandir o primeiro quadro por padrão
+        sectionCards[0].classList.add("expanded");
+    }
 }
 
 // Alternar seção (expandir/recolher)
