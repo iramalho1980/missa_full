@@ -1,13 +1,161 @@
 // Variáveis globais
 let draggedElement = null;
 let missaItems = [];
+let canticos = {};
+let allCanticos = [];
 
 // Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
+    loadCanticos();
     initializeDragAndDrop();
     updateMissaDisplay();
     initializeCollapsibleSections();
+    initializeSearch();
 });
+
+// Carregar lista de cânticos do arquivo JSON
+async function loadCanticos() {
+    try {
+        const response = await fetch('canticos.json');
+        canticos = await response.json();
+        
+        // Criar lista de todos os cânticos para busca
+        allCanticos = [];
+        Object.keys(canticos).forEach(categoria => {
+            canticos[categoria].forEach(cantico => {
+                allCanticos.push({
+                    nome: formatCanticoName(cantico),
+                    categoria: categoria,
+                    arquivo: cantico
+                });
+            });
+        });
+        
+        createSections();
+    } catch (error) {
+        console.error('Erro ao carregar cânticos:', error);
+        // Fallback para dados estáticos se o arquivo não existir
+        createFallbackSections();
+    }
+}
+
+// Formatar nome do cântico (remover underscores e capitalizar)
+function formatCanticoName(filename) {
+    return filename
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, l => l.toUpperCase());
+}
+
+// Criar seções dinamicamente
+function createSections() {
+    const sectionsGrid = document.querySelector('.sections-grid');
+    sectionsGrid.innerHTML = '';
+    
+    Object.keys(canticos).forEach(categoria => {
+        const sectionCard = document.createElement('div');
+        sectionCard.className = 'section-card';
+        sectionCard.setAttribute('data-section', categoria);
+        
+        const itemsHtml = canticos[categoria].map(cantico => {
+            const nomeFormatado = formatCanticoName(cantico);
+            return `<div class="item" draggable="true" data-item="${cantico}" data-categoria="${categoria}" onclick="openPDF('${nomeFormatado}', '${categoria}', '${cantico}')">${nomeFormatado}</div>`;
+        }).join('');
+        
+        sectionCard.innerHTML = `
+            <div class="section-header" onclick="toggleSection(this)">
+                <span class="section-title">${categoria}</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="items-container">
+                <div class="items-content">
+                    ${itemsHtml}
+                </div>
+            </div>
+        `;
+        
+        sectionsGrid.appendChild(sectionCard);
+    });
+    
+    // Reinicializar drag and drop após criar as seções
+    setTimeout(() => {
+        initializeDragAndDrop();
+    }, 100);
+}
+
+// Criar seções de fallback se o JSON não carregar
+function createFallbackSections() {
+    const sectionsGrid = document.querySelector('.sections-grid');
+    const fallbackSections = [
+        'Entrada', 'Ato Penitencial', 'Gloria', 'Aclamação', 
+        'Ofertório', 'Santo', 'Cordeiro', 'Comunhão', 
+        'Ação de graças', 'Final', 'Marianos', 'Adoração', 'Paz', 'Amem'
+    ];
+    
+    sectionsGrid.innerHTML = '';
+    
+    fallbackSections.forEach(categoria => {
+        const sectionCard = document.createElement('div');
+        sectionCard.className = 'section-card';
+        sectionCard.setAttribute('data-section', categoria);
+        
+        sectionCard.innerHTML = `
+            <div class="section-header" onclick="toggleSection(this)">
+                <span class="section-title">${categoria}</span>
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="items-container">
+                <div class="items-content">
+                    <div class="empty-state">Carregue os cânticos para esta seção</div>
+                </div>
+            </div>
+        `;
+        
+        sectionsGrid.appendChild(sectionCard);
+    });
+}
+
+// Inicializar funcionalidade de busca
+function initializeSearch() {
+    const searchBox = document.getElementById('searchBox');
+    const searchResults = document.getElementById('searchResults');
+    
+    searchBox.addEventListener('input', function(e) {
+        const query = e.target.value.toLowerCase().trim();
+        
+        if (query.length < 2) {
+            searchResults.style.display = 'none';
+            return;
+        }
+        
+        const filteredCanticos = allCanticos.filter(cantico => 
+            cantico.nome.toLowerCase().includes(query)
+        );
+        
+        if (filteredCanticos.length > 0) {
+            searchResults.innerHTML = filteredCanticos.map(cantico => 
+                `<div class="search-result-item" onclick="openPDFFromSearch('${cantico.nome}', '${cantico.categoria}', '${cantico.arquivo}')">${cantico.nome} <small>(${cantico.categoria})</small></div>`
+            ).join('');
+            searchResults.style.display = 'block';
+        } else {
+            searchResults.innerHTML = '<div class="search-result-item">Nenhum cântico encontrado</div>';
+            searchResults.style.display = 'block';
+        }
+    });
+    
+    // Fechar resultados ao clicar fora
+    document.addEventListener('click', function(e) {
+        if (!searchBox.contains(e.target) && !searchResults.contains(e.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+}
+
+// Abrir PDF a partir da busca
+function openPDFFromSearch(nome, categoria, arquivo) {
+    openPDF(nome, categoria, arquivo);
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('searchBox').value = '';
+}
 
 // Inicializar seções recolhíveis
 function initializeCollapsibleSections() {
@@ -75,6 +223,7 @@ function handleDragStart(e) {
     // Armazenar dados do item sendo arrastado
     e.dataTransfer.setData('text/plain', e.target.textContent);
     e.dataTransfer.setData('item-id', e.target.getAttribute('data-item'));
+    e.dataTransfer.setData('item-categoria', e.target.getAttribute('data-categoria'));
     e.dataTransfer.effectAllowed = 'copy';
     
     // Prevenir que o clique do drag interfira com o onclick
@@ -129,6 +278,7 @@ function handleDrop(e) {
     if (target.classList.contains('missa-container') || target.id === 'missa-container') {
         const itemText = e.dataTransfer.getData('text/plain');
         const itemId = e.dataTransfer.getData('item-id');
+        const itemCategoria = e.dataTransfer.getData('item-categoria');
         
         if (itemText && itemId) {
             // Verificar se o item já existe na missa
@@ -138,6 +288,7 @@ function handleDrop(e) {
                 const newItem = {
                     id: itemId,
                     text: itemText.trim(),
+                    categoria: itemCategoria,
                     originalElement: draggedElement
                 };
                 missaItems.push(newItem);
@@ -165,7 +316,7 @@ function updateMissaDisplay() {
         missaItem.setAttribute('data-index', index);
         
         missaItem.innerHTML = `
-            <span onclick="openPDFFromMissa('${item.text.replace(/'/g, '\\\'')}')">${item.text}</span>
+            <span class="missa-item-text" onclick="openPDFFromMissa('${item.text.replace(/'/g, '\\\')}', '${item.categoria}', '${item.id}')">${item.text}</span>
             <button class="delete-btn" onclick="removeFromMissa(${index})">Remover</button>
         `;
         
@@ -221,7 +372,7 @@ function removeFromMissa(index) {
 }
 
 // Abrir PDF em popup
-function openPDF(title) {
+function openPDF(title, categoria, arquivo) {
     // Prevenir que o drag interfira com o clique
     if (draggedElement) {
         return;
@@ -233,8 +384,8 @@ function openPDF(title) {
     
     popupTitle.textContent = title;
     
-    // Como não temos PDFs reais, vamos simular com uma página de exemplo
-    const pdfUrl = generatePDFUrl(title);
+    // Construir caminho do PDF
+    const pdfUrl = `Letras/${categoria}/${arquivo}.pdf`;
     pdfViewer.src = pdfUrl;
     
     popup.style.display = 'block';
@@ -242,14 +393,8 @@ function openPDF(title) {
 }
 
 // Abrir PDF a partir da missa
-function openPDFFromMissa(title) {
-    openPDF(title);
-}
-
-// Gerar URL do PDF (simulação)
-function generatePDFUrl(title) {
-    const encodedTitle = encodeURIComponent(title);
-    return `data:text/html,<html><head><title>${encodedTitle}</title><style>body{font-family:'Ubuntu',Arial,sans-serif;padding:40px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);margin:0;min-height:100vh;}</style></head><body><div style="max-width:800px;margin:0 auto;"><h1 style="color:#333;text-align:center;margin-bottom:30px;font-weight:300;font-size:2.5rem;background:linear-gradient(135deg,#ffd700 0%,#ffed4e 50%,#ffd700 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${title}</h1><div style="background:rgba(255,255,255,0.9);backdrop-filter:blur(10px);padding:40px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.1);border:1px solid rgba(255,255,255,0.2);"><h2 style="color:#666;border-bottom:2px solid #ffd700;padding-bottom:15px;margin-bottom:25px;font-weight:400;">Letra da Música</h2><div style="line-height:2;color:#444;font-size:16px;"><p><strong>Verso 1:</strong></p><p style="margin-left:20px;font-style:italic;">Esta é uma simulação da letra da música "<strong>${title}</strong>".</p><p style="margin-left:20px;font-style:italic;">Em uma implementação real, aqui seria exibido</p><p style="margin-left:20px;font-style:italic;">o conteúdo do PDF correspondente à música selecionada.</p><br><p><strong>Refrão:</strong></p><p style="margin-left:20px;font-style:italic;">Você pode substituir este conteúdo</p><p style="margin-left:20px;font-style:italic;">pelos PDFs reais das músicas</p><p style="margin-left:20px;font-style:italic;">do seu repertório litúrgico.</p><br><p><strong>Verso 2:</strong></p><p style="margin-left:20px;font-style:italic;">Para uma experiência completa,</p><p style="margin-left:20px;font-style:italic;">adicione os arquivos PDF reais</p><p style="margin-left:20px;font-style:italic;">na pasta do projeto.</p></div><div style="margin-top:40px;padding:25px;background:rgba(255,215,0,0.1);border-left:4px solid #ffd700;border-radius:0 10px 10px 0;"><p style="margin:0;font-style:italic;color:#666;font-size:14px;"><strong>Nota:</strong> Para implementar com PDFs reais, substitua a função <code>generatePDFUrl()</code> no arquivo <code>script.js</code> pelos caminhos corretos dos seus arquivos PDF.</p></div></div></div></body></html>`;
+function openPDFFromMissa(title, categoria, arquivo) {
+    openPDF(title, categoria, arquivo);
 }
 
 // Fechar popup
@@ -278,6 +423,77 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// Salvar missa no GitHub (localStorage como fallback)
+async function saveMissa() {
+    if (missaItems.length === 0) {
+        alert('Não há itens na missa para salvar.');
+        return;
+    }
+    
+    const missaData = {
+        data: new Date().toISOString(),
+        itens: missaItems.map(item => ({
+            id: item.id,
+            text: item.text,
+            categoria: item.categoria
+        }))
+    };
+    
+    try {
+        // Tentar salvar no GitHub via API (requer autenticação)
+        // Por enquanto, usar localStorage
+        const savedMissas = JSON.parse(localStorage.getItem('missasSalvas') || '[]');
+        const missaName = prompt('Nome para esta missa:', `Missa ${new Date().toLocaleDateString()}`);
+        
+        if (missaName) {
+            missaData.nome = missaName;
+            savedMissas.push(missaData);
+            localStorage.setItem('missasSalvas', JSON.stringify(savedMissas));
+            alert('Missa salva com sucesso!');
+        }
+    } catch (error) {
+        console.error('Erro ao salvar missa:', error);
+        alert('Erro ao salvar missa.');
+    }
+}
+
+// Carregar missa salva
+function loadMissa() {
+    try {
+        const savedMissas = JSON.parse(localStorage.getItem('missasSalvas') || '[]');
+        
+        if (savedMissas.length === 0) {
+            alert('Nenhuma missa salva encontrada.');
+            return;
+        }
+        
+        // Criar lista de missas salvas
+        const missasList = savedMissas.map((missa, index) => 
+            `${index + 1}. ${missa.nome} (${new Date(missa.data).toLocaleDateString()})`
+        ).join('\n');
+        
+        const selection = prompt(`Missas salvas:\n${missasList}\n\nDigite o número da missa que deseja carregar:`);
+        const index = parseInt(selection) - 1;
+        
+        if (index >= 0 && index < savedMissas.length) {
+            const selectedMissa = savedMissas[index];
+            missaItems = selectedMissa.itens.map(item => ({
+                id: item.id,
+                text: item.text,
+                categoria: item.categoria,
+                originalElement: null
+            }));
+            updateMissaDisplay();
+            alert('Missa carregada com sucesso!');
+        } else {
+            alert('Seleção inválida.');
+        }
+    } catch (error) {
+        console.error('Erro ao carregar missa:', error);
+        alert('Erro ao carregar missa.');
+    }
+}
+
 // Função para adicionar novos itens dinamicamente
 function addNewItem(section, itemText, itemId) {
     const sectionCard = document.querySelector(`[data-section="${section}"]`);
@@ -288,8 +504,9 @@ function addNewItem(section, itemText, itemId) {
             newItem.className = 'item';
             newItem.draggable = true;
             newItem.setAttribute('data-item', itemId);
+            newItem.setAttribute('data-categoria', section);
             newItem.textContent = itemText;
-            newItem.onclick = () => openPDF(itemText);
+            newItem.onclick = () => openPDF(itemText, section, itemId);
             
             // Adicionar event listeners
             newItem.addEventListener('dragstart', handleDragStart);
@@ -304,7 +521,8 @@ function addNewItem(section, itemText, itemId) {
 function exportMissaOrder() {
     const order = missaItems.map(item => ({
         id: item.id,
-        text: item.text
+        text: item.text,
+        categoria: item.categoria
     }));
     
     console.log('Ordem da Missa:', order);
@@ -316,6 +534,7 @@ function importMissaOrder(savedOrder) {
     missaItems = savedOrder.map(item => ({
         id: item.id,
         text: item.text,
+        categoria: item.categoria,
         originalElement: null
     }));
     updateMissaDisplay();
@@ -381,11 +600,13 @@ function addTouchSupport() {
                 if (dropTarget && touchItem.classList.contains('item')) {
                     const itemText = touchItem.textContent.trim();
                     const itemId = touchItem.getAttribute('data-item');
+                    const itemCategoria = touchItem.getAttribute('data-categoria');
                     
                     if (itemId && !missaItems.find(item => item.id === itemId)) {
                         const newItem = {
                             id: itemId,
                             text: itemText,
+                            categoria: itemCategoria,
                             originalElement: touchItem
                         };
                         missaItems.push(newItem);
@@ -418,8 +639,10 @@ addTouchSupport();
 
 // Função para limpar a missa
 function clearMissa() {
-    missaItems = [];
-    updateMissaDisplay();
+    if (confirm('Tem certeza que deseja limpar a missa atual?')) {
+        missaItems = [];
+        updateMissaDisplay();
+    }
 }
 
 // Adicionar atalhos de teclado
@@ -436,12 +659,63 @@ document.addEventListener('keydown', function(e) {
         collapseAllSections();
     }
     
-    // Ctrl/Cmd + L para limpar a missa
+    // Ctrl/Cmd + S para salvar missa
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        saveMissa();
+    }
+    
+    // Ctrl/Cmd + L para carregar missa
     if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
         e.preventDefault();
-        if (confirm('Deseja limpar toda a programação da missa?')) {
-            clearMissa();
-        }
+        loadMissa();
     }
 });
+
+// Função para criar backup dos dados
+function createBackup() {
+    const backup = {
+        missaItems: missaItems,
+        savedMissas: JSON.parse(localStorage.getItem('missasSalvas') || '[]'),
+        timestamp: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(backup, null, 2);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `backup_missa_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+    
+    URL.revokeObjectURL(url);
+}
+
+// Função para restaurar backup
+function restoreBackup(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const backup = JSON.parse(e.target.result);
+            
+            if (backup.missaItems) {
+                missaItems = backup.missaItems;
+                updateMissaDisplay();
+            }
+            
+            if (backup.savedMissas) {
+                localStorage.setItem('missasSalvas', JSON.stringify(backup.savedMissas));
+            }
+            
+            alert('Backup restaurado com sucesso!');
+        } catch (error) {
+            alert('Erro ao restaurar backup: arquivo inválido.');
+        }
+    };
+    reader.readAsText(file);
+}
 

@@ -89,6 +89,64 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
+        .search-container {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-box::placeholder {
+            color: rgba(192, 192, 192, 0.7);
+        }
+
+        .search-box:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -183,17 +241,57 @@
         }
 
         .section-card.expanded .items-container {
-            max-height: 500px;
+            max-height: 400px;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .items-content {
             min-height: 120px;
+            max-height: 350px;
             border: 2px dashed rgba(192, 192, 192, 0.2);
             border-radius: 12px;
             padding: 15px;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.02);
+            overflow-y: auto;
+        }
+
+        /* Estilização da barra de rolagem */
+        .items-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .items-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .items-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 4px;
+        }
+
+        .items-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
+        }
+
+        .items-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .items-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .items-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 4px;
+        }
+
+        .items-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
         }
 
         .items-content.drag-over {
@@ -287,6 +385,34 @@
             text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
         }
 
+        .missa-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            color: #ffd700;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(255, 215, 0, 0.1);
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2);
+        }
+
         .missa-container {
             min-height: 400px;
             border: 3px dashed rgba(255, 215, 0, 0.4);
@@ -343,6 +469,11 @@
                 0 8px 24px rgba(0, 0, 0, 0.3),
                 0 0 0 1px rgba(255, 215, 0, 0.5),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .missa-item-text {
+            cursor: pointer;
+            flex: 1;
         }
 
         .delete-btn {
@@ -483,6 +614,16 @@
                 height: 95%;
                 padding: 20px;
             }
+
+            .missa-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .control-btn {
+                width: 100%;
+                max-width: 200px;
+            }
         }
 
         /* Animações adicionais */
@@ -501,22 +642,12 @@
             }
         }
 
-        /* Efeitos de brilho */
-        .item:hover::after,
-        .missa-item:hover::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        .search-container {
+            position: relative;
+            display: inline-block;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shine 0.6s ease-in-out;
-        }
-
-        @keyframes shine {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            max-width: 500px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -524,290 +655,45 @@
     <div class="container">
         <div class="header">
             <h1>Organizador de Missa</h1>
-            <p>Organize os momentos da celebração de forma prática e intuitiva</p>
+            <p>Organize os cânticos da sua celebração de forma prática e intuitiva</p>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchBox" placeholder="Pesquisar cânticos...">
+            <div class="search-results" id="searchResults"></div>
         </div>
 
         <div class="main-content">
             <div class="sections-grid">
-                <div class="section-card" data-section="entrada">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Entrada</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="entrada-1" onclick="openPDF('Canto de Entrada - Ave Maria')">
-                                Ave Maria (Entrada)
-                            </div>
-                            <div class="item" draggable="true" data-item="entrada-2" onclick="openPDF('Canto de Entrada - Vem Espírito Santo')">
-                                Vem Espírito Santo
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="ato-penitencial">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Ato Penitencial</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="penitencial-1" onclick="openPDF('Ato Penitencial - Senhor Tende Piedade')">
-                                Senhor, Tende Piedade
-                            </div>
-                            <div class="item" draggable="true" data-item="penitencial-2" onclick="openPDF('Ato Penitencial - Perdão Senhor')">
-                                Perdão, Senhor
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="gloria">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Glória</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="gloria-1" onclick="openPDF('Glória - Glória a Deus nas Alturas')">
-                                Glória a Deus nas Alturas
-                            </div>
-                            <div class="item" draggable="true" data-item="gloria-2" onclick="openPDF('Glória - Glória ao Pai')">
-                                Glória ao Pai
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="aclamacao">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Aclamação</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="aclamacao-1" onclick="openPDF('Aclamação - Aleluia')">
-                                Aleluia
-                            </div>
-                            <div class="item" draggable="true" data-item="aclamacao-2" onclick="openPDF('Aclamação - Palavra de Salvação')">
-                                Palavra de Salvação
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="ofertorio">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Ofertório</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="ofertorio-1" onclick="openPDF('Ofertório - Recebe Senhor')">
-                                Recebe, Senhor
-                            </div>
-                            <div class="item" draggable="true" data-item="ofertorio-2" onclick="openPDF('Ofertório - Pão e Vinho')">
-                                Pão e Vinho
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="santo">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Santo</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="santo-1" onclick="openPDF('Santo - Santo Santo Santo')">
-                                Santo, Santo, Santo
-                            </div>
-                            <div class="item" draggable="true" data-item="santo-2" onclick="openPDF('Santo - Hosana nas Alturas')">
-                                Hosana nas Alturas
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="paz">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Paz</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="paz-1" onclick="openPDF('Paz - A Paz Esteja Convosco')">
-                                A Paz Esteja Convosco
-                            </div>
-                            <div class="item" draggable="true" data-item="paz-2" onclick="openPDF('Paz - Dai-nos a Paz')">
-                                Dai-nos a Paz
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="amem">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Amém</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="amem-1" onclick="openPDF('Amém - Grande Amém')">
-                                Grande Amém
-                            </div>
-                            <div class="item" draggable="true" data-item="amem-2" onclick="openPDF('Amém - Amém Aleluia')">
-                                Amém, Aleluia
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="cordeiro">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Cordeiro</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="cordeiro-1" onclick="openPDF('Cordeiro - Cordeiro de Deus')">
-                                Cordeiro de Deus
-                            </div>
-                            <div class="item" draggable="true" data-item="cordeiro-2" onclick="openPDF('Cordeiro - Cordeiro Santo')">
-                                Cordeiro Santo
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="comunhao">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Comunhão</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="comunhao-1" onclick="openPDF('Comunhão - Pão da Vida')">
-                                Pão da Vida
-                            </div>
-                            <div class="item" draggable="true" data-item="comunhao-2" onclick="openPDF('Comunhão - Corpo e Sangue')">
-                                Corpo e Sangue
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="acao-gracas">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Ação de Graças</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="gracas-1" onclick="openPDF('Ação de Graças - Obrigado Senhor')">
-                                Obrigado, Senhor
-                            </div>
-                            <div class="item" draggable="true" data-item="gracas-2" onclick="openPDF('Ação de Graças - Te Damos Graças')">
-                                Te Damos Graças
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="final">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Final</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="final-1" onclick="openPDF('Final - Ide em Paz')">
-                                Ide em Paz
-                            </div>
-                            <div class="item" draggable="true" data-item="final-2" onclick="openPDF('Final - Benção Final')">
-                                Bênção Final
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="marianos">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Marianos</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="mariano-1" onclick="openPDF('Mariano - Ave Maria de Lourdes')">
-                                Ave Maria de Lourdes
-                            </div>
-                            <div class="item" draggable="true" data-item="mariano-2" onclick="openPDF('Mariano - Salve Rainha')">
-                                Salve Rainha
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="louvor">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Louvor</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="louvor-1" onclick="openPDF('Louvor - Louvado Seja')">
-                                Louvado Seja
-                            </div>
-                            <div class="item" draggable="true" data-item="louvor-2" onclick="openPDF('Louvor - Bendito Seja Deus')">
-                                Bendito Seja Deus
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-card" data-section="meditacao">
-                    <div class="section-header" onclick="toggleSection(this)">
-                        <div class="section-title">Meditação</div>
-                        <div class="expand-icon">▼</div>
-                    </div>
-                    <div class="items-container">
-                        <div class="items-content">
-                            <div class="item" draggable="true" data-item="meditacao-1" onclick="openPDF('Meditação - Silêncio Sagrado')">
-                                Silêncio Sagrado
-                            </div>
-                            <div class="item" draggable="true" data-item="meditacao-2" onclick="openPDF('Meditação - Contemplação')">
-                                Contemplação
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Seções serão carregadas dinamicamente -->
             </div>
 
             <div class="missa-hoje">
                 <h2>Missa de Hoje</h2>
+                <div class="missa-controls">
+                    <button class="control-btn" onclick="saveMissa()">💾 Salvar</button>
+                    <button class="control-btn" onclick="loadMissa()">📂 Carregar</button>
+                    <button class="control-btn" onclick="clearMissa()">🗑️ Limpar</button>
+                </div>
                 <div class="missa-container" id="missa-container">
-                    <div class="empty-state">
-                        Arraste os itens aqui para organizar a missa
-                    </div>
+                    <div class="empty-state">Arraste os itens aqui para organizar a missa</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Popup para visualização de PDF -->
+    <!-- Popup para exibir PDFs -->
     <div class="popup-overlay" id="popup-overlay">
         <div class="popup-content">
             <div class="popup-header">
-                <div class="popup-title" id="popup-title">Título da Música</div>
-                <div class="close-btn" onclick="closePopup()">×</div>
+                <h3 class="popup-title" id="popup-title">Título do Cântico</h3>
+                <button class="close-btn" onclick="closePopup()">×</button>
             </div>
-            <iframe class="pdf-viewer" id="pdf-viewer" src=""></iframe>
+            <iframe class="pdf-viewer" id="pdf-viewer"></iframe>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script_new.js"></script>
 </body>
 </html>
 
