@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Missa Full</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background-color: #f0f0f0;
+  }
+  details {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+  }
+  summary {
+    padding: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #eee;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0 10px 10px 10px;
+  }
+  li {
+    margin-bottom: 5px;
+  }
+  a {
+    text-decoration: none;
+    color: #333;
+  }
+  a:hover {
+    color: #000;
+  }
+</style>
+<script>
+  function openPdf(pdfUrl) {
+    window.open(pdfUrl, '_blank', 'popup=yes');
+  }
+</script>
+</head>
+<body>
+<h1>Missa Full - Letras</h1>
+
+<script>
+const files = [
+'missa_full_repo/Letras/Aclamação/a_minhalma_abrirei.pdf',
+'missa_full_repo/Letras/Aclamação/a_vossa_palavra_senhor.pdf',
+'missa_full_repo/Letras/Aclamação/aleluia_como_o_pai_me_amou.pdf',
+'missa_full_repo/Letras/Aclamação/aleluia_quando_estamos_unidos.pdf',
+'missa_full_repo/Letras/Aclamação/buscai_primeiro_o_reino_de_deus.pdf',
+'missa_full_repo/Letras/Aclamação/como_sao_belos.pdf',
+'missa_full_repo/Letras/Aclamação/eu_vim_para_escutar.pdf',
+'missa_full_repo/Letras/Aclamação/louvor_e_gloria_a_ti_senhor.pdf',
+'missa_full_repo/Letras/Aclamação/palavra_de_salvacao.pdf',
+'missa_full_repo/Letras/Aclamação/quando_estamos_unidos.pdf',
+'missa_full_repo/Letras/Aclamação/que_alegria_cristo_ressurgiu.pdf',
+'missa_full_repo/Letras/Aclamação/vai_falar_no_evangelho.pdf',
+'missa_full_repo/Letras/Adoração/a_alegria_esta_no_coracao.pdf',
+'missa_full_repo/Letras/Adoração/a_nos_descei_divina_luz.pdf',
+'missa_full_repo/Letras/Adoração/agua_viva.pdf',
+'missa_full_repo/Letras/Adoração/amar_como_jesus_amou.pdf',
+'missa_full_repo/Letras/Adoração/bate_o_sino.pdf',
+'missa_full_repo/Letras/Adoração/eu_louvarei.pdf',
+'missa_full_repo/Letras/Adoração/eu_quero_um_rio.pdf',
+'missa_full_repo/Letras/Adoração/louvado_seja_o_meu_senhor.pdf',
+'missa_full_repo/Letras/Adoração/louvemos_ao_senhor.pdf',
+'missa_full_repo/Letras/Adoração/meu_mestre__a_minha_vida_e_do_mestre.pdf',
+'missa_full_repo/Letras/Adoração/noite_feliz.pdf',
+'missa_full_repo/Letras/Adoração/noites_traicoeiras.pdf',
+'missa_full_repo/Letras/Adoração/nossa_senhora.pdf',
+'missa_full_repo/Letras/Adoração/oracao_da_familia.pdf',
+'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco.pdf',
+'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco_ii.pdf',
+'missa_full_repo/Letras/Adoração/podes_reinar.pdf',
+'missa_full_repo/Letras/Adoração/segura_na_mao_de_deus.pdf',
+'missa_full_repo/Letras/Adoração/tao_sublime.pdf',
+'missa_full_repo/Letras/Adoração/utopia.pdf',
+'missa_full_repo/Letras/Amem/6.1 - Amem [ D+ ].pdf',
+'missa_full_repo/Letras/Ato Penitencial/conheco_um_coracao.pdf',
+'missa_full_repo/Letras/Ato Penitencial/coracoes_arrependidos.pdf',
+'missa_full_repo/Letras/Ato Penitencial/eu_confesso.pdf',
+'missa_full_repo/Letras/Ato Penitencial/kyrie_eleison_senhor que viestes salvar.pdf',
+'missa_full_repo/Letras/Ato Penitencial/pelos_pecados_erros_passados.pdf',
+'missa_full_repo/Letras/Ato Penitencial/perdao_senhor.pdf',
+'missa_full_repo/Letras/Ato Penitencial/renovame.pdf',
+'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_dos_corações_arrependidos.pdf',
+'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_perdoai_nossa_culpa.pdf',
+'missa_full_repo/Letras/Ato Penitencial/senhor_vos_sois_o_caminho.pdf',
+'missa_full_repo/Letras/Ação de graças/como_es_lindo.pdf',
+'missa_full_repo/Letras/Ação de graças/deus_esta_aqui.pdf',
+'missa_full_repo/Letras/Ação de graças/e_impossivel_nao_crer_em_ti.pdf',
+'missa_full_repo/Letras/Ação de graças/espirito_santo.pdf',
+'missa_full_repo/Letras/Ação de graças/invade_minhalma.pdf',
+'missa_full_repo/Letras/Ação de graças/obrigado_senhor.pdf',
+'missa_full_repo/Letras/Ação de graças/so_em_ti.pdf',
+'missa_full_repo/Letras/Comunhão/a_barca.pdf',
+'missa_full_repo/Letras/Comunhão/a_ti_meu_deus.pdf',
+'missa_full_repo/Letras/Comunhão/antes_da_morte_e_ressurreicao.pdf',
+'missa_full_repo/Letras/Comunhão/cantar_a_beleza_da_vida.pdf',
+'missa_full_repo/Letras/Comunhão/cantar_um_canto_ensinado_por_deus.pdf',
+'missa_full_repo/Letras/Comunhão/como_es_lindo.pdf',
+'missa_full_repo/Letras/Comunhão/conheço_um_coração.pdf',
+'missa_full_repo/Letras/Comunhão/da_cepa_brotou_a_rama.pdf',
+'missa_full_repo/Letras/Comunhão/desamarrem_as_sandalias.pdf',
+'missa_full_repo/Letras/Comunhão/estas_entre_nos.pdf',
+'missa_full_repo/Letras/Comunhão/este_pranto_em_minhas_maos.pdf',
+'missa_full_repo/Letras/Comunhão/eu_navegarei.pdf',
+'missa_full_repo/Letras/Comunhão/eu_quis_comer_esta_ceia_agora.pdf',
+'missa_full_repo/Letras/Comunhão/eu_vim_para_que_todos_tenham_vida.pdf',
+'missa_full_repo/Letras/Comunhão/pelos_prados.pdf',
+'missa_full_repo/Letras/Comunhão/presença_linda.pdf',
+'missa_full_repo/Letras/Comunhão/procuro_abrigo_nos_coracoes.pdf',
+'missa_full_repo/Letras/Comunhão/quando_teu_pai_revelou.pdf',
+'missa_full_repo/Letras/Comunhão/quem_nos_separara.pdf',
+'missa_full_repo/Letras/Comunhão/sacramento_da_comunhao.pdf',
+'missa_full_repo/Letras/Comunhão/sacramento_da_comunhão.pdf',
+'missa_full_repo/Letras/Comunhão/sim_eu_quero.pdf',
+'missa_full_repo/Letras/Comunhão/sonda_me.pdf',
+'missa_full_repo/Letras/Comunhão/vejam_eu_andei_pelas_vilas.pdf',
+'missa_full_repo/Letras/Comunhão/vem_eu_mostrarei.pdf',
+'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_dainos_a_paz.pdf',
+'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_que_tirais.pdf',
+'missa_full_repo/Letras/Cordeiro/cordeiro_do_maior.pdf',
+'missa_full_repo/Letras/Cordeiro/cordeiro_tende_piedade.pdf',
+'missa_full_repo/Letras/Entrada/a_biblia_e_a_palavra_de_deus.pdf',
+'missa_full_repo/Letras/Entrada/alegres_vamos_a_casa_do_pai.pdf',
+'missa_full_repo/Letras/Entrada/bendita_e_louvada_seja.pdf',
+'missa_full_repo/Letras/Entrada/bom_pastor.pdf',
+'missa_full_repo/Letras/Entrada/coração_santo.pdf',
+'missa_full_repo/Letras/Entrada/cristo_ressucitou_aleluia.pdf',
+'missa_full_repo/Letras/Entrada/deixa_a_luz_do_ceu_entrar.pdf',
+'missa_full_repo/Letras/Entrada/eis_me_aqui_senhor.pdf',
+'missa_full_repo/Letras/Entrada/eu_e_minha_casa_serviremos_ao_senhor.pdf',
+'missa_full_repo/Letras/Entrada/faco_novas_todas_as_coisas.pdf',
+'missa_full_repo/Letras/Entrada/hoje_e_tempo_de_louvar_a_deus.pdf',
+'missa_full_repo/Letras/Entrada/nos_estamos_aqui_reunidos.pdf',
+'missa_full_repo/Letras/Entrada/por_entre_aclamações.pdf',
+'missa_full_repo/Letras/Entrada/por_sua_morte_a_morte_viu_o_fim.pdf',
+'missa_full_repo/Letras/Entrada/te_amarei.pdf',
+'missa_full_repo/Letras/Entrada/toda_biblia_e_comunicacao.pdf',
+'missa_full_repo/Letras/Final/a_escolhida.pdf',
+'missa_full_repo/Letras/Final/anjos_de_deus.pdf',
+'missa_full_repo/Letras/Final/cristo_eh_a_felicidade.pdf',
+'missa_full_repo/Letras/Final/faco_novas_todas_as_coisas.pdf',
+'missa_full_repo/Letras/Final/imaculada_maria_de_deus.pdf',
+'missa_full_repo/Letras/Final/pelas_estradas_da_vida.pdf',
+'missa_full_repo/Letras/Final/segura_na_mao_de_deus_e_vai.pdf',
+'missa_full_repo/Letras/Gloria/a_ele_seja_a_gloria.pdf',
+'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas__rock_balada.pdf',
+'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas_shalom.pdf',
+'missa_full_repo/Letras/Gloria/gloria_a_deus_nos_altos_ceus.pdf',
+'missa_full_repo/Letras/Gloria/gloria_ao_pai_criador.pdf',
+'missa_full_repo/Letras/Gloria/gloria_deus_nas_alturas__eliana.pdf',
+'missa_full_repo/Letras/Gloria/gloria_nos_vos_damos_graças.pdf',
+'missa_full_repo/Letras/Gloria/gloria_vinde_cristaos.pdf',
+'missa_full_repo/Letras/Marianos/a_escolhida.pdf',
+'missa_full_repo/Letras/Marianos/ave_cheia_de_graca.pdf',
+'missa_full_repo/Letras/Marianos/consagracao_nossa_senhora.pdf',
+'missa_full_repo/Letras/Marianos/imaculada_maria_de_deus.pdf',
+'missa_full_repo/Letras/Marianos/maria_de_nazare.pdf',
+'missa_full_repo/Letras/Marianos/santa_mae_maria.pdf',
+'missa_full_repo/Letras/Ofertório/a_ti_meu_deus.pdf',
+'missa_full_repo/Letras/Ofertório/de_maos_estendidas.pdf',
+'missa_full_repo/Letras/Ofertório/meu_coracao_eh_para_ti.pdf',
+'missa_full_repo/Letras/Ofertório/minha_vida_tem_sentido.pdf',
+'missa_full_repo/Letras/Ofertório/muitos_graos_de_trigo.pdf',
+'missa_full_repo/Letras/Ofertório/os_dons_que_trago_aqui.pdf',
+'missa_full_repo/Letras/Ofertório/sabes_senhor.pdf',
+'missa_full_repo/Letras/Ofertório/um_coracao_para_amar.pdf',
+'missa_full_repo/Letras/Paz/esteja_sempre_com_voce.pdf',
+'missa_full_repo/Letras/Paz/irmao_minha_paz_eu_te_dou.pdf',
+'missa_full_repo/Letras/Paz/paz_paz_de_cristo.pdf',
+'missa_full_repo/Letras/Santo/hosane_hei_hosana_ha.pdf',
+'missa_full_repo/Letras/Santo/o_senhor_eh_santo.pdf',
+'missa_full_repo/Letras/Santo/santo_eh_o_senhor.pdf',
+'missa_full_repo/Letras/Santo/senhor_deus_do_universo.pdf'
+];
+
+const order = ['Entrada', 'Ato Penitencial', 'Gloria', 'Aclamação', 'Ofertório', 'Santo', 'Cordeiro', 'Comunhão', 'Final'];
+
+const groupedFiles = files.reduce((acc, file) => {
+  const parts = file.split('/');
+  const category = parts[2];
+  const fileName = parts[3];
+  if (!acc[category]) {
+    acc[category] = [];
+  }
+  acc[category].push({fileName, filePath: file});
+  return acc;
+}, {});
+
+const sortedCategories = order.concat(Object.keys(groupedFiles).filter(c => !order.includes(c)));
+
+const container = document.createElement('div');
+
+sortedCategories.forEach(category => {
+  if (groupedFiles[category]) {
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    summary.textContent = category;
+    details.appendChild(summary);
+
+    const ul = document.createElement('ul');
+    groupedFiles[category].forEach(file => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = `javascript:openPdf('${file.filePath.replace('missa_full_repo/', '')}')`;
+      a.textContent = file.fileName;
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+
+    details.appendChild(ul);
+    container.appendChild(details);
+  }
+});
+
+document.body.appendChild(container);
+
+</script>
+</body>
+</html>
+
+
