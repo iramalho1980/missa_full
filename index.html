@@ -243,6 +243,7 @@
             box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
         }
 
+        /* Missa de Hoje - Desktop */
         .missa-hoje {
             position: fixed;
             top: 0;
@@ -261,6 +262,55 @@
 
         .missa-hoje.open {
             right: 0;
+        }
+
+        /* Missa de Hoje - Mobile Popup Glass */
+        @media (max-width: 768px) {
+            .missa-hoje {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                width: 90vw;
+                height: 80vh;
+                max-width: 400px;
+                max-height: 600px;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(25px);
+                border: 2px solid rgba(255, 215, 0, 0.6);
+                border-radius: 20px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                z-index: 2000;
+                right: auto;
+            }
+
+            .missa-hoje.open {
+                opacity: 1;
+                visibility: visible;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            /* Overlay para mobile */
+            .missa-hoje::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(5px);
+                z-index: -1;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .missa-hoje.open::before {
+                opacity: 1;
+            }
         }
 
         .missa-header {
@@ -309,16 +359,11 @@
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 10px;
-            cursor: grab;
             transition: all 0.3s ease;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            touch-action: none;
-        }
-
-        .missa-item:active {
-            cursor: grabbing;
+            /* Removido cursor: grab e touch-action: none para desabilitar arrastar */
         }
 
         .missa-item:hover {
@@ -326,16 +371,7 @@
             border-color: rgba(255, 215, 0, 0.3);
         }
 
-        .missa-item.dragging {
-            opacity: 0.6;
-            transform: rotate(2deg) scale(1.02);
-            z-index: 1000;
-        }
-
-        .missa-item.drag-over {
-            border-color: #ffd700;
-            background: rgba(255, 215, 0, 0.2);
-        }
+        /* Removido estilos de dragging para desabilitar arrastar */
 
         .remove-button {
             background: rgba(255, 69, 58, 0.8);
@@ -512,15 +548,6 @@
                 height: 250px;
             }
             
-            .missa-hoje {
-                width: 100%;
-                right: -100%;
-            }
-            
-            .missa-hoje.open {
-                right: 0;
-            }
-            
             h1 {
                 font-size: 1.8rem;
                 margin-bottom: 20px;
@@ -659,7 +686,7 @@
         </div>
         <div class="missa-list" id="missaList">
             <div class="empty-state">
-                Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje
+                Clique no botão [+] para adicionar cânticos à missa de hoje
             </div>
         </div>
     </div>
@@ -820,15 +847,12 @@
         let groupedFiles = {};
         let allSongs = [];
         let missaSongs = [];
-        let draggedElement = null;
-        let draggedIndex = -1;
 
         // Initialize the application
         function init() {
             processFiles();
             renderCategories();
             setupSearch();
-            setupDragAndDrop();
             loadMissaFromStorage();
         }
 
@@ -856,7 +880,7 @@
             }, {});
         }
 
-        // Render categories in 3-column grid
+        // Render categories in 3-column grid - TODOS RECOLHIDOS POR PADRÃO
         function renderCategories() {
             const container = document.getElementById('categoriesGrid');
             const sortedCategories = order.concat(Object.keys(groupedFiles).filter(c => !order.includes(c)));
@@ -871,49 +895,83 @@
             });
         }
 
-        // Create category card with scrollable content
+        // Create category card with scrollable content - RECOLHIDO POR PADRÃO
         function createCategoryCard(category, songs) {
             const card = document.createElement('div');
-            card.className = 'category-card';
-            card.innerHTML = `
-                <div class="category-header" onclick="toggleCategory(this)">
-                    <span class="category-title">${category}</span>
-                    <span class="category-arrow">▶</span>
-                </div>
-                <div class="category-content">
-                    <div class="song-list">
-                        ${songs.map(song => `
-                            <div class="song-item" data-song='${JSON.stringify(song)}' draggable="true">
-                                <span class="song-name" onclick="openSong('${song.filePath}', '${song.fileName}')">${song.fileName}</span>
-                                <button class="add-button" onclick="addToMissa(event, '${song.id}')">+</button>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
+            card.className = 'category-card'; // Removido 'expanded' para começar recolhido
+            
+            const header = document.createElement('div');
+            header.className = 'category-header';
+            header.onclick = () => toggleCategory(card);
+            
+            const title = document.createElement('h3');
+            title.className = 'category-title';
+            title.textContent = category;
+            
+            const arrow = document.createElement('span');
+            arrow.className = 'category-arrow';
+            arrow.textContent = '▶';
+            
+            header.appendChild(title);
+            header.appendChild(arrow);
+            
+            const content = document.createElement('div');
+            content.className = 'category-content';
+            
+            const songList = document.createElement('div');
+            songList.className = 'song-list';
+            
+            songs.forEach(song => {
+                const songItem = createSongItem(song);
+                songList.appendChild(songItem);
+            });
+            
+            content.appendChild(songList);
+            card.appendChild(header);
+            card.appendChild(content);
+            
             return card;
         }
 
         // Toggle category expansion
-        function toggleCategory(header) {
-            const card = header.parentElement;
+        function toggleCategory(card) {
             card.classList.toggle('expanded');
         }
 
-        // Toggle Missa de Hoje panel
-        function toggleMissa() {
-            const panel = document.getElementById('missaPanel');
-            panel.classList.toggle('open');
+        // Create individual song item
+        function createSongItem(song) {
+            const item = document.createElement('div');
+            item.className = 'song-item';
+            item.draggable = true;
+            item.setAttribute('data-song', JSON.stringify(song));
+            
+            const name = document.createElement('span');
+            name.className = 'song-name';
+            name.textContent = song.fileName;
+            name.onclick = () => openSong(song);
+            
+            const addBtn = document.createElement('button');
+            addBtn.className = 'add-button';
+            addBtn.textContent = '+';
+            addBtn.onclick = (e) => {
+                e.stopPropagation();
+                addToMissa(song);
+            };
+            
+            item.appendChild(name);
+            item.appendChild(addBtn);
+            
+            return item;
         }
 
         // Open song in popup
-        function openSong(filePath, fileName) {
+        function openSong(song) {
             const popup = document.getElementById('popupOverlay');
-            const iframe = document.getElementById('popupIframe');
             const title = document.getElementById('popupTitle');
+            const iframe = document.getElementById('popupIframe');
             
-            title.textContent = fileName;
-            iframe.src = filePath.replace('missa_full_repo/', '');
+            title.textContent = song.fileName;
+            iframe.src = song.filePath;
             popup.style.display = 'flex';
         }
 
@@ -927,10 +985,8 @@
         }
 
         // Add song to missa
-        function addToMissa(event, songId) {
-            event.stopPropagation();
-            const song = allSongs.find(s => s.id == songId);
-            if (song && !missaSongs.find(ms => ms.id == songId)) {
+        function addToMissa(song) {
+            if (!missaSongs.find(ms => ms.id == song.id)) {
                 missaSongs.push({...song, missaId: Date.now() + Math.random()});
                 renderMissa();
                 saveMissaToStorage();
@@ -939,215 +995,101 @@
 
         // Remove song from missa
         function removeFromMissa(missaId) {
-            missaSongs = missaSongs.filter(s => s.missaId != missaId);
+            missaSongs = missaSongs.filter(song => song.missaId !== missaId);
             renderMissa();
             saveMissaToStorage();
         }
 
-        // Render missa list with improved drag and drop
+        // Render missa list - SEM FUNCIONALIDADE DE ARRASTAR
         function renderMissa() {
             const container = document.getElementById('missaList');
             
             if (missaSongs.length === 0) {
-                container.innerHTML = '<div class="empty-state">Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje</div>';
+                container.innerHTML = '<div class="empty-state">Clique no botão [+] para adicionar cânticos à missa de hoje</div>';
                 return;
             }
+            
+            container.innerHTML = '';
+            
+            missaSongs.forEach((song, index) => {
+                const item = document.createElement('div');
+                item.className = 'missa-item';
+                item.setAttribute('data-index', index);
+                // Removido draggable e eventos de drag
+                
+                const name = document.createElement('span');
+                name.textContent = song.fileName;
+                name.onclick = () => openSong(song);
+                name.style.cursor = 'pointer';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-button';
+                removeBtn.textContent = '×';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeFromMissa(song.missaId);
+                };
+                
+                item.appendChild(name);
+                item.appendChild(removeBtn);
+                container.appendChild(item);
+            });
+        }
 
-            container.innerHTML = missaSongs.map((song, index) => `
-                <div class="missa-item" draggable="true" data-index="${index}" data-missa-id="${song.missaId}">
-                    <span onclick="openSong('${song.filePath.replace('missa_full_repo/', '')}', '${song.fileName}')" style="cursor: pointer; flex: 1;">${song.fileName}</span>
-                    <button class="remove-button" onclick="removeFromMissa('${song.missaId}')">×</button>
-                </div>
-            `).join('');
-
-            setupMissaDragAndDrop();
+        // Toggle missa panel
+        function toggleMissa() {
+            const panel = document.getElementById('missaPanel');
+            panel.classList.toggle('open');
+            
+            // Prevent body scroll on mobile when panel is open
+            if (window.innerWidth <= 768) {
+                if (panel.classList.contains('open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
         }
 
         // Setup search functionality
         function setupSearch() {
             const searchInput = document.getElementById('searchInput');
+            
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 filterSongs(query);
             });
         }
 
-        // Filter songs based on search
+        // Filter songs based on search query
         function filterSongs(query) {
             const categoryCards = document.querySelectorAll('.category-card');
             
             categoryCards.forEach(card => {
                 const songItems = card.querySelectorAll('.song-item');
                 let hasVisibleSongs = false;
-
+                
                 songItems.forEach(item => {
                     const songName = item.querySelector('.song-name').textContent.toLowerCase();
-                    const isVisible = songName.includes(query);
-                    item.style.display = isVisible ? 'flex' : 'none';
-                    if (isVisible) hasVisibleSongs = true;
+                    
+                    if (songName.includes(query)) {
+                        item.style.display = 'flex';
+                        hasVisibleSongs = true;
+                    } else {
+                        item.style.display = 'none';
+                    }
                 });
-
-                card.style.display = hasVisibleSongs || query === '' ? 'block' : 'none';
-                if (query && hasVisibleSongs) {
-                    card.classList.add('expanded');
-                }
-            });
-        }
-
-        // Setup drag and drop for adding songs to missa
-        function setupDragAndDrop() {
-            const missaPanel = document.getElementById('missaPanel');
-            const dragIndicator = document.getElementById('dragIndicator');
-
-            // Handle drag start from song items
-            document.addEventListener('dragstart', (e) => {
-                if (e.target.closest('.song-item') && !e.target.closest('.missa-item')) {
-                    const songItem = e.target.closest('.song-item');
-                    const songData = songItem.getAttribute('data-song');
-                    e.dataTransfer.setData('text/plain', songData);
-                    e.dataTransfer.effectAllowed = 'copy';
-                }
-            });
-
-            // Handle drag over missa panel
-            missaPanel.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'copy';
-                dragIndicator.classList.add('show');
-            });
-
-            missaPanel.addEventListener('dragleave', (e) => {
-                if (!missaPanel.contains(e.relatedTarget)) {
-                    dragIndicator.classList.remove('show');
-                }
-            });
-
-            // Handle drop on missa panel
-            missaPanel.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dragIndicator.classList.remove('show');
                 
-                const songData = e.dataTransfer.getData('text/plain');
-                if (songData) {
-                    try {
-                        const song = JSON.parse(songData);
-                        if (!missaSongs.find(ms => ms.id == song.id)) {
-                            missaSongs.push({...song, missaId: Date.now() + Math.random()});
-                            renderMissa();
-                            saveMissaToStorage();
-                        }
-                    } catch (error) {
-                        console.error('Error parsing song data:', error);
-                    }
+                // Show/hide category based on whether it has visible songs
+                if (query === '') {
+                    card.style.display = 'flex';
+                    card.classList.remove('expanded'); // Recolher quando limpar busca
+                } else if (hasVisibleSongs) {
+                    card.style.display = 'flex';
+                    card.classList.add('expanded'); // Expandir quando houver resultados
+                } else {
+                    card.style.display = 'none';
                 }
-            });
-        }
-
-        // Setup drag and drop for reordering missa songs
-        function setupMissaDragAndDrop() {
-            const missaItems = document.querySelectorAll('.missa-item');
-            
-            missaItems.forEach((item, index) => {
-                // Drag start
-                item.addEventListener('dragstart', (e) => {
-                    draggedElement = item;
-                    draggedIndex = index;
-                    item.classList.add('dragging');
-                    e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/html', item.outerHTML);
-                });
-
-                // Drag end
-                item.addEventListener('dragend', (e) => {
-                    item.classList.remove('dragging');
-                    draggedElement = null;
-                    draggedIndex = -1;
-                    
-                    // Remove drag-over class from all items
-                    missaItems.forEach(mi => mi.classList.remove('drag-over'));
-                });
-
-                // Drag over
-                item.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    if (draggedElement && draggedElement !== item) {
-                        item.classList.add('drag-over');
-                    }
-                });
-
-                // Drag leave
-                item.addEventListener('dragleave', (e) => {
-                    item.classList.remove('drag-over');
-                });
-
-                // Drop
-                item.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    item.classList.remove('drag-over');
-                    
-                    if (draggedElement && draggedElement !== item) {
-                        const targetIndex = parseInt(item.getAttribute('data-index'));
-                        
-                        if (draggedIndex !== targetIndex) {
-                            // Reorder the array
-                            const draggedSong = missaSongs[draggedIndex];
-                            missaSongs.splice(draggedIndex, 1);
-                            missaSongs.splice(targetIndex, 0, draggedSong);
-                            
-                            renderMissa();
-                            saveMissaToStorage();
-                        }
-                    }
-                });
-
-                // Touch events for mobile
-                let touchStartY = 0;
-                let touchStartX = 0;
-                let isDragging = false;
-
-                item.addEventListener('touchstart', (e) => {
-                    touchStartY = e.touches[0].clientY;
-                    touchStartX = e.touches[0].clientX;
-                    isDragging = false;
-                }, { passive: true });
-
-                item.addEventListener('touchmove', (e) => {
-                    const touchY = e.touches[0].clientY;
-                    const touchX = e.touches[0].clientX;
-                    const deltaY = Math.abs(touchY - touchStartY);
-                    const deltaX = Math.abs(touchX - touchStartX);
-                    
-                    if (deltaY > 10 || deltaX > 10) {
-                        isDragging = true;
-                        item.classList.add('dragging');
-                    }
-                }, { passive: true });
-
-                item.addEventListener('touchend', (e) => {
-                    if (isDragging) {
-                        item.classList.remove('dragging');
-                        
-                        // Find the element under the touch point
-                        const touch = e.changedTouches[0];
-                        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                        const targetItem = elementBelow?.closest('.missa-item');
-                        
-                        if (targetItem && targetItem !== item) {
-                            const currentIndex = parseInt(item.getAttribute('data-index'));
-                            const targetIndex = parseInt(targetItem.getAttribute('data-index'));
-                            
-                            if (currentIndex !== targetIndex) {
-                                const draggedSong = missaSongs[currentIndex];
-                                missaSongs.splice(currentIndex, 1);
-                                missaSongs.splice(targetIndex, 0, draggedSong);
-                                
-                                renderMissa();
-                                saveMissaToStorage();
-                            }
-                        }
-                    }
-                    isDragging = false;
-                }, { passive: true });
             });
         }
 
@@ -1176,28 +1118,31 @@
             }
         });
 
-        // Prevent body scroll when missa panel is open on mobile
-        function preventBodyScroll() {
+        // Close missa panel when clicking outside on mobile
+        document.addEventListener('click', (e) => {
             const missaPanel = document.getElementById('missaPanel');
-            if (missaPanel.classList.contains('open') && window.innerWidth <= 768) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = '';
+            const missaToggle = document.querySelector('.missa-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                missaPanel.classList.contains('open') && 
+                !missaPanel.contains(e.target) && 
+                !missaToggle.contains(e.target)) {
+                toggleMissa();
             }
-        }
-
-        // Update body scroll prevention when missa panel toggles
-        const originalToggleMissa = toggleMissa;
-        toggleMissa = function() {
-            originalToggleMissa();
-            setTimeout(preventBodyScroll, 100);
-        };
+        });
 
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
 
         // Handle window resize
-        window.addEventListener('resize', preventBodyScroll);
+        window.addEventListener('resize', () => {
+            const panel = document.getElementById('missaPanel');
+            if (window.innerWidth > 768) {
+                document.body.style.overflow = '';
+            } else if (panel.classList.contains('open')) {
+                document.body.style.overflow = 'hidden';
+            }
+        });
     </script>
 </body>
 </html>
