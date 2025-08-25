@@ -19,20 +19,21 @@
             min-height: 100vh;
             color: #fff;
             overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 15px;
         }
 
         h1 {
             font-family: 'Ubuntu', sans-serif;
             font-weight: 600;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             background: linear-gradient(45deg, #ffd700, #ffed4e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -41,13 +42,13 @@
         }
 
         .search-container {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             position: relative;
         }
 
         .search-input {
             width: 100%;
-            padding: 15px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 25px;
             background: rgba(255, 255, 255, 0.1);
@@ -70,16 +71,41 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            align-items: start;
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
-        .categories-section {
+        .missa-toggle {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .missa-toggle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .categories-grid {
             display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 15px;
+            margin-bottom: 20px;
         }
 
         .category-card {
@@ -89,16 +115,19 @@
             border-radius: 15px;
             overflow: hidden;
             transition: all 0.3s ease;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
         .category-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             border-color: rgba(255, 215, 0, 0.5);
         }
 
         .category-header {
-            padding: 20px;
+            padding: 15px;
             cursor: pointer;
             background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(26, 26, 26, 0.1));
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -106,6 +135,7 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .category-header:hover {
@@ -115,12 +145,12 @@
         .category-title {
             font-family: 'Ubuntu', sans-serif;
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #ffd700;
         }
 
         .category-arrow {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #c0c0c0;
             transition: transform 0.3s ease;
         }
@@ -133,22 +163,44 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
+            flex: 1;
         }
 
         .category-card.expanded .category-content {
-            max-height: 500px;
+            max-height: 250px;
         }
 
         .song-list {
-            padding: 20px;
+            padding: 10px;
+            height: 100%;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .song-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .song-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .song-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.5);
+            border-radius: 3px;
+        }
+
+        .song-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 215, 0, 0.7);
         }
 
         .song-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            margin-bottom: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -159,21 +211,22 @@
         .song-item:hover {
             background: rgba(255, 215, 0, 0.1);
             border-color: rgba(255, 215, 0, 0.3);
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
 
         .song-name {
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             flex: 1;
+            line-height: 1.3;
         }
 
         .add-button {
             background: linear-gradient(45deg, #ffd700, #ffed4e);
             color: #1a1a1a;
             border: none;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             font-weight: 600;
             cursor: pointer;
@@ -181,32 +234,69 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
         }
 
         .add-button:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
         }
 
         .missa-hoje {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
-            border: 2px solid rgba(255, 215, 0, 0.3);
-            border-radius: 15px;
-            padding: 25px;
-            position: sticky;
-            top: 20px;
-            max-height: 80vh;
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 2px solid rgba(255, 215, 0, 0.5);
+            padding: 20px;
+            transition: right 0.4s ease;
+            z-index: 1000;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .missa-hoje.open {
+            right: 0;
+        }
+
+        .missa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
         }
 
         .missa-title {
             font-family: 'Ubuntu', sans-serif;
             font-weight: 600;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #ffd700;
-            margin-bottom: 20px;
-            text-align: center;
+        }
+
+        .close-missa {
+            background: rgba(255, 69, 58, 0.8);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-missa:hover {
+            background: rgba(255, 69, 58, 1);
+            transform: scale(1.1);
         }
 
         .missa-list {
@@ -224,6 +314,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            touch-action: none;
+        }
+
+        .missa-item:active {
+            cursor: grabbing;
         }
 
         .missa-item:hover {
@@ -232,8 +327,14 @@
         }
 
         .missa-item.dragging {
-            opacity: 0.5;
-            transform: rotate(5deg);
+            opacity: 0.6;
+            transform: rotate(2deg) scale(1.02);
+            z-index: 1000;
+        }
+
+        .missa-item.drag-over {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
         }
 
         .remove-button {
@@ -249,6 +350,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
         .remove-button:hover {
@@ -267,7 +369,7 @@
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 2000;
             animation: fadeIn 0.3s ease;
         }
 
@@ -297,7 +399,7 @@
             font-family: 'Ubuntu', sans-serif;
             font-weight: 600;
             color: #ffd700;
-            font-size: 1.3rem;
+            font-size: 1.2rem;
         }
 
         .close-button {
@@ -350,27 +452,182 @@
         .empty-state {
             text-align: center;
             color: rgba(255, 255, 255, 0.6);
-            padding: 40px 20px;
+            padding: 30px 15px;
             font-style: italic;
+            line-height: 1.4;
         }
 
-        .drag-over {
-            border-color: #ffd700 !important;
-            background: rgba(255, 215, 0, 0.1) !important;
+        .drag-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 215, 0, 0.9);
+            color: #1a1a1a;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
+        .drag-indicator.show {
+            opacity: 1;
+        }
+
+        /* Responsividade para tablets */
+        @media (max-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .category-card {
+                height: 280px;
             }
             
             .missa-hoje {
-                position: static;
-                max-height: none;
+                width: 350px;
+                right: -350px;
             }
             
             h1 {
                 font-size: 2rem;
+            }
+        }
+
+        /* Responsividade para smartphones */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .category-card {
+                height: 250px;
+            }
+            
+            .missa-hoje {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .missa-hoje.open {
+                right: 0;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .search-input {
+                padding: 10px 15px;
+                font-size: 16px;
+            }
+            
+            .missa-toggle {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .category-header {
+                padding: 12px;
+            }
+            
+            .category-title {
+                font-size: 1rem;
+            }
+            
+            .song-item {
+                padding: 8px 10px;
+            }
+            
+            .song-name {
+                font-size: 0.85rem;
+            }
+            
+            .add-button {
+                width: 26px;
+                height: 26px;
+                font-size: 14px;
+            }
+            
+            .popup-content {
+                width: 95%;
+                height: 95%;
+                border-radius: 15px;
+            }
+            
+            .popup-header {
+                padding: 15px;
+            }
+            
+            .popup-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Ajustes específicos para iPhone */
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .category-card {
+                height: 220px;
+            }
+            
+            .category-header {
+                padding: 10px;
+            }
+            
+            .song-item {
+                padding: 6px 8px;
+                margin-bottom: 4px;
+            }
+            
+            .song-name {
+                font-size: 0.8rem;
+            }
+            
+            .add-button {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+        }
+
+        /* Melhorias para touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            .song-item:hover {
+                transform: none;
+            }
+            
+            .category-card:hover {
+                transform: none;
+            }
+            
+            .add-button:hover {
+                transform: none;
+            }
+            
+            .song-item:active {
+                background: rgba(255, 215, 0, 0.2);
+                transform: scale(0.98);
+            }
+            
+            .add-button:active {
+                transform: scale(0.95);
             }
         }
     </style>
@@ -383,18 +640,26 @@
             <input type="text" class="search-input" placeholder="Buscar cânticos pelo nome ou conteúdo..." id="searchInput">
         </div>
 
-        <div class="main-content">
-            <div class="categories-section" id="categoriesSection">
-                <!-- Categories will be populated by JavaScript -->
-            </div>
+        <div class="top-controls">
+            <button class="missa-toggle" onclick="toggleMissa()">
+                📋 Missa de Hoje
+            </button>
+        </div>
 
-            <div class="missa-hoje">
-                <h2 class="missa-title">Missa de Hoje</h2>
-                <div class="missa-list" id="missaList">
-                    <div class="empty-state">
-                        Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje
-                    </div>
-                </div>
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Categories will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Missa de Hoje Panel -->
+    <div class="missa-hoje" id="missaPanel">
+        <div class="missa-header">
+            <h2 class="missa-title">Missa de Hoje</h2>
+            <button class="close-missa" onclick="toggleMissa()">×</button>
+        </div>
+        <div class="missa-list" id="missaList">
+            <div class="empty-state">
+                Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje
             </div>
         </div>
     </div>
@@ -411,6 +676,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Drag Indicator -->
+    <div class="drag-indicator" id="dragIndicator">Solte aqui para adicionar à missa</div>
 
     <script>
         const files = [
@@ -552,6 +820,8 @@
         let groupedFiles = {};
         let allSongs = [];
         let missaSongs = [];
+        let draggedElement = null;
+        let draggedIndex = -1;
 
         // Initialize the application
         function init() {
@@ -586,9 +856,9 @@
             }, {});
         }
 
-        // Render categories
+        // Render categories in 3-column grid
         function renderCategories() {
-            const container = document.getElementById('categoriesSection');
+            const container = document.getElementById('categoriesGrid');
             const sortedCategories = order.concat(Object.keys(groupedFiles).filter(c => !order.includes(c)));
 
             container.innerHTML = '';
@@ -601,7 +871,7 @@
             });
         }
 
-        // Create category card
+        // Create category card with scrollable content
         function createCategoryCard(category, songs) {
             const card = document.createElement('div');
             card.className = 'category-card';
@@ -613,7 +883,7 @@
                 <div class="category-content">
                     <div class="song-list">
                         ${songs.map(song => `
-                            <div class="song-item" data-song='${JSON.stringify(song)}'>
+                            <div class="song-item" data-song='${JSON.stringify(song)}' draggable="true">
                                 <span class="song-name" onclick="openSong('${song.filePath}', '${song.fileName}')">${song.fileName}</span>
                                 <button class="add-button" onclick="addToMissa(event, '${song.id}')">+</button>
                             </div>
@@ -628,6 +898,12 @@
         function toggleCategory(header) {
             const card = header.parentElement;
             card.classList.toggle('expanded');
+        }
+
+        // Toggle Missa de Hoje panel
+        function toggleMissa() {
+            const panel = document.getElementById('missaPanel');
+            panel.classList.toggle('open');
         }
 
         // Open song in popup
@@ -668,7 +944,7 @@
             saveMissaToStorage();
         }
 
-        // Render missa list
+        // Render missa list with improved drag and drop
         function renderMissa() {
             const container = document.getElementById('missaList');
             
@@ -720,21 +996,36 @@
 
         // Setup drag and drop for adding songs to missa
         function setupDragAndDrop() {
-            const missaList = document.getElementById('missaList');
+            const missaPanel = document.getElementById('missaPanel');
+            const dragIndicator = document.getElementById('dragIndicator');
 
-            // Allow drop on missa list
-            missaList.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                missaList.classList.add('drag-over');
+            // Handle drag start from song items
+            document.addEventListener('dragstart', (e) => {
+                if (e.target.closest('.song-item') && !e.target.closest('.missa-item')) {
+                    const songItem = e.target.closest('.song-item');
+                    const songData = songItem.getAttribute('data-song');
+                    e.dataTransfer.setData('text/plain', songData);
+                    e.dataTransfer.effectAllowed = 'copy';
+                }
             });
 
-            missaList.addEventListener('dragleave', () => {
-                missaList.classList.remove('drag-over');
+            // Handle drag over missa panel
+            missaPanel.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'copy';
+                dragIndicator.classList.add('show');
             });
 
-            missaList.addEventListener('drop', (e) => {
+            missaPanel.addEventListener('dragleave', (e) => {
+                if (!missaPanel.contains(e.relatedTarget)) {
+                    dragIndicator.classList.remove('show');
+                }
+            });
+
+            // Handle drop on missa panel
+            missaPanel.addEventListener('drop', (e) => {
                 e.preventDefault();
-                missaList.classList.remove('drag-over');
+                dragIndicator.classList.remove('show');
                 
                 const songData = e.dataTransfer.getData('text/plain');
                 if (songData) {
@@ -750,48 +1041,113 @@
                     }
                 }
             });
-
-            // Make song items draggable
-            document.addEventListener('dragstart', (e) => {
-                if (e.target.closest('.song-item')) {
-                    const songItem = e.target.closest('.song-item');
-                    const songData = songItem.getAttribute('data-song');
-                    e.dataTransfer.setData('text/plain', songData);
-                }
-            });
         }
 
         // Setup drag and drop for reordering missa songs
         function setupMissaDragAndDrop() {
             const missaItems = document.querySelectorAll('.missa-item');
             
-            missaItems.forEach(item => {
+            missaItems.forEach((item, index) => {
+                // Drag start
                 item.addEventListener('dragstart', (e) => {
-                    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-index'));
-                    e.target.classList.add('dragging');
+                    draggedElement = item;
+                    draggedIndex = index;
+                    item.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', item.outerHTML);
                 });
 
+                // Drag end
                 item.addEventListener('dragend', (e) => {
-                    e.target.classList.remove('dragging');
+                    item.classList.remove('dragging');
+                    draggedElement = null;
+                    draggedIndex = -1;
+                    
+                    // Remove drag-over class from all items
+                    missaItems.forEach(mi => mi.classList.remove('drag-over'));
                 });
 
+                // Drag over
                 item.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                });
-
-                item.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
-                    const targetIndex = parseInt(e.target.getAttribute('data-index'));
-                    
-                    if (draggedIndex !== targetIndex) {
-                        const draggedSong = missaSongs[draggedIndex];
-                        missaSongs.splice(draggedIndex, 1);
-                        missaSongs.splice(targetIndex, 0, draggedSong);
-                        renderMissa();
-                        saveMissaToStorage();
+                    if (draggedElement && draggedElement !== item) {
+                        item.classList.add('drag-over');
                     }
                 });
+
+                // Drag leave
+                item.addEventListener('dragleave', (e) => {
+                    item.classList.remove('drag-over');
+                });
+
+                // Drop
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    item.classList.remove('drag-over');
+                    
+                    if (draggedElement && draggedElement !== item) {
+                        const targetIndex = parseInt(item.getAttribute('data-index'));
+                        
+                        if (draggedIndex !== targetIndex) {
+                            // Reorder the array
+                            const draggedSong = missaSongs[draggedIndex];
+                            missaSongs.splice(draggedIndex, 1);
+                            missaSongs.splice(targetIndex, 0, draggedSong);
+                            
+                            renderMissa();
+                            saveMissaToStorage();
+                        }
+                    }
+                });
+
+                // Touch events for mobile
+                let touchStartY = 0;
+                let touchStartX = 0;
+                let isDragging = false;
+
+                item.addEventListener('touchstart', (e) => {
+                    touchStartY = e.touches[0].clientY;
+                    touchStartX = e.touches[0].clientX;
+                    isDragging = false;
+                }, { passive: true });
+
+                item.addEventListener('touchmove', (e) => {
+                    const touchY = e.touches[0].clientY;
+                    const touchX = e.touches[0].clientX;
+                    const deltaY = Math.abs(touchY - touchStartY);
+                    const deltaX = Math.abs(touchX - touchStartX);
+                    
+                    if (deltaY > 10 || deltaX > 10) {
+                        isDragging = true;
+                        item.classList.add('dragging');
+                    }
+                }, { passive: true });
+
+                item.addEventListener('touchend', (e) => {
+                    if (isDragging) {
+                        item.classList.remove('dragging');
+                        
+                        // Find the element under the touch point
+                        const touch = e.changedTouches[0];
+                        const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+                        const targetItem = elementBelow?.closest('.missa-item');
+                        
+                        if (targetItem && targetItem !== item) {
+                            const currentIndex = parseInt(item.getAttribute('data-index'));
+                            const targetIndex = parseInt(targetItem.getAttribute('data-index'));
+                            
+                            if (currentIndex !== targetIndex) {
+                                const draggedSong = missaSongs[currentIndex];
+                                missaSongs.splice(currentIndex, 1);
+                                missaSongs.splice(targetIndex, 0, draggedSong);
+                                
+                                renderMissa();
+                                saveMissaToStorage();
+                            }
+                        }
+                    }
+                    isDragging = false;
+                }, { passive: true });
             });
         }
 
@@ -820,8 +1176,28 @@
             }
         });
 
+        // Prevent body scroll when missa panel is open on mobile
+        function preventBodyScroll() {
+            const missaPanel = document.getElementById('missaPanel');
+            if (missaPanel.classList.contains('open') && window.innerWidth <= 768) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Update body scroll prevention when missa panel toggles
+        const originalToggleMissa = toggleMissa;
+        toggleMissa = function() {
+            originalToggleMissa();
+            setTimeout(preventBodyScroll, 100);
+        };
+
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
+
+        // Handle window resize
+        window.addEventListener('resize', preventBodyScroll);
     </script>
 </body>
 </html>
