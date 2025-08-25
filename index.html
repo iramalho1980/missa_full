@@ -1,226 +1,828 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-<title>Missa Full</title>
-<style>
-  body {
-    font-family: sans-serif;
-    background-color: #f0f0f0;
-  }
-  details {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background-color: #fff;
-  }
-  summary {
-    padding: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    background-color: #eee;
-  }
-  ul {
-    list-style-type: none;
-    padding: 0 10px 10px 10px;
-  }
-  li {
-    margin-bottom: 5px;
-  }
-  a {
-    text-decoration: none;
-    color: #333;
-  }
-  a:hover {
-    color: #000;
-  }
-</style>
-<script>
-  function openPdf(pdfUrl) {
-    window.open(pdfUrl, '_blank', 'popup=yes');
-  }
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missa Full - Letras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 300;
+            background: linear-gradient(135deg, #2c2c2c 0%, #c0c0c0 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 600;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .search-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #fff;
+            font-size: 16px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 300;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .categories-section {
+            display: grid;
+            gap: 15px;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 215, 0, 0.5);
+        }
+
+        .category-header {
+            padding: 20px;
+            cursor: pointer;
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.1), rgba(26, 26, 26, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .category-header:hover {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(192, 192, 192, 0.1));
+        }
+
+        .category-title {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #ffd700;
+        }
+
+        .category-arrow {
+            font-size: 1.5rem;
+            color: #c0c0c0;
+            transition: transform 0.3s ease;
+        }
+
+        .category-card.expanded .category-arrow {
+            transform: rotate(90deg);
+        }
+
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .category-card.expanded .category-content {
+            max-height: 500px;
+        }
+
+        .song-list {
+            padding: 20px;
+        }
+
+        .song-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .song-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+            transform: translateX(5px);
+        }
+
+        .song-name {
+            color: #fff;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+
+        .add-button {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #1a1a1a;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .missa-hoje {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            position: sticky;
+            top: 20px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .missa-title {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 600;
+            font-size: 1.4rem;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .missa-list {
+            min-height: 200px;
+        }
+
+        .missa-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: grab;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .missa-item:hover {
+            background: rgba(255, 215, 0, 0.1);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .missa-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .remove-button {
+            background: rgba(255, 69, 58, 0.8);
+            color: white;
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .remove-button:hover {
+            background: rgba(255, 69, 58, 1);
+            transform: scale(1.1);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 20px;
+            width: 90%;
+            height: 90%;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+            animation: slideIn 0.3s ease;
+        }
+
+        .popup-header {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.9), rgba(192, 192, 192, 0.9));
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .popup-title {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 600;
+            color: #ffd700;
+            font-size: 1.3rem;
+        }
+
+        .close-button {
+            background: rgba(255, 69, 58, 0.8);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: rgba(255, 69, 58, 1);
+            transform: scale(1.1);
+        }
+
+        .popup-body {
+            padding: 0;
+            height: calc(100% - 80px);
+        }
+
+        .popup-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: scale(0.8) translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 40px 20px;
+            font-style: italic;
+        }
+
+        .drag-over {
+            border-color: #ffd700 !important;
+            background: rgba(255, 215, 0, 0.1) !important;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .missa-hoje {
+                position: static;
+                max-height: none;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>Missa Full - Letras</h1>
+    <div class="container">
+        <h1>Missa Full - Letras</h1>
+        
+        <div class="search-container">
+            <input type="text" class="search-input" placeholder="Buscar cânticos pelo nome ou conteúdo..." id="searchInput">
+        </div>
 
-<script>
-const files = [
-'missa_full_repo/Letras/Aclamação/a_minhalma_abrirei.pdf',
-'missa_full_repo/Letras/Aclamação/a_vossa_palavra_senhor.pdf',
-'missa_full_repo/Letras/Aclamação/aleluia_como_o_pai_me_amou.pdf',
-'missa_full_repo/Letras/Aclamação/aleluia_quando_estamos_unidos.pdf',
-'missa_full_repo/Letras/Aclamação/buscai_primeiro_o_reino_de_deus.pdf',
-'missa_full_repo/Letras/Aclamação/como_sao_belos.pdf',
-'missa_full_repo/Letras/Aclamação/eu_vim_para_escutar.pdf',
-'missa_full_repo/Letras/Aclamação/louvor_e_gloria_a_ti_senhor.pdf',
-'missa_full_repo/Letras/Aclamação/palavra_de_salvacao.pdf',
-'missa_full_repo/Letras/Aclamação/quando_estamos_unidos.pdf',
-'missa_full_repo/Letras/Aclamação/que_alegria_cristo_ressurgiu.pdf',
-'missa_full_repo/Letras/Aclamação/vai_falar_no_evangelho.pdf',
-'missa_full_repo/Letras/Adoração/a_alegria_esta_no_coracao.pdf',
-'missa_full_repo/Letras/Adoração/a_nos_descei_divina_luz.pdf',
-'missa_full_repo/Letras/Adoração/agua_viva.pdf',
-'missa_full_repo/Letras/Adoração/amar_como_jesus_amou.pdf',
-'missa_full_repo/Letras/Adoração/bate_o_sino.pdf',
-'missa_full_repo/Letras/Adoração/eu_louvarei.pdf',
-'missa_full_repo/Letras/Adoração/eu_quero_um_rio.pdf',
-'missa_full_repo/Letras/Adoração/louvado_seja_o_meu_senhor.pdf',
-'missa_full_repo/Letras/Adoração/louvemos_ao_senhor.pdf',
-'missa_full_repo/Letras/Adoração/meu_mestre__a_minha_vida_e_do_mestre.pdf',
-'missa_full_repo/Letras/Adoração/noite_feliz.pdf',
-'missa_full_repo/Letras/Adoração/noites_traicoeiras.pdf',
-'missa_full_repo/Letras/Adoração/nossa_senhora.pdf',
-'missa_full_repo/Letras/Adoração/oracao_da_familia.pdf',
-'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco.pdf',
-'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco_ii.pdf',
-'missa_full_repo/Letras/Adoração/podes_reinar.pdf',
-'missa_full_repo/Letras/Adoração/segura_na_mao_de_deus.pdf',
-'missa_full_repo/Letras/Adoração/tao_sublime.pdf',
-'missa_full_repo/Letras/Adoração/utopia.pdf',
-'missa_full_repo/Letras/Amem/6.1 - Amem [ D+ ].pdf',
-'missa_full_repo/Letras/Ato Penitencial/conheco_um_coracao.pdf',
-'missa_full_repo/Letras/Ato Penitencial/coracoes_arrependidos.pdf',
-'missa_full_repo/Letras/Ato Penitencial/eu_confesso.pdf',
-'missa_full_repo/Letras/Ato Penitencial/kyrie_eleison_senhor que viestes salvar.pdf',
-'missa_full_repo/Letras/Ato Penitencial/pelos_pecados_erros_passados.pdf',
-'missa_full_repo/Letras/Ato Penitencial/perdao_senhor.pdf',
-'missa_full_repo/Letras/Ato Penitencial/renovame.pdf',
-'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_dos_corações_arrependidos.pdf',
-'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_perdoai_nossa_culpa.pdf',
-'missa_full_repo/Letras/Ato Penitencial/senhor_vos_sois_o_caminho.pdf',
-'missa_full_repo/Letras/Ação de graças/como_es_lindo.pdf',
-'missa_full_repo/Letras/Ação de graças/deus_esta_aqui.pdf',
-'missa_full_repo/Letras/Ação de graças/e_impossivel_nao_crer_em_ti.pdf',
-'missa_full_repo/Letras/Ação de graças/espirito_santo.pdf',
-'missa_full_repo/Letras/Ação de graças/invade_minhalma.pdf',
-'missa_full_repo/Letras/Ação de graças/obrigado_senhor.pdf',
-'missa_full_repo/Letras/Ação de graças/so_em_ti.pdf',
-'missa_full_repo/Letras/Comunhão/a_barca.pdf',
-'missa_full_repo/Letras/Comunhão/a_ti_meu_deus.pdf',
-'missa_full_repo/Letras/Comunhão/antes_da_morte_e_ressurreicao.pdf',
-'missa_full_repo/Letras/Comunhão/cantar_a_beleza_da_vida.pdf',
-'missa_full_repo/Letras/Comunhão/cantar_um_canto_ensinado_por_deus.pdf',
-'missa_full_repo/Letras/Comunhão/como_es_lindo.pdf',
-'missa_full_repo/Letras/Comunhão/conheço_um_coração.pdf',
-'missa_full_repo/Letras/Comunhão/da_cepa_brotou_a_rama.pdf',
-'missa_full_repo/Letras/Comunhão/desamarrem_as_sandalias.pdf',
-'missa_full_repo/Letras/Comunhão/estas_entre_nos.pdf',
-'missa_full_repo/Letras/Comunhão/este_pranto_em_minhas_maos.pdf',
-'missa_full_repo/Letras/Comunhão/eu_navegarei.pdf',
-'missa_full_repo/Letras/Comunhão/eu_quis_comer_esta_ceia_agora.pdf',
-'missa_full_repo/Letras/Comunhão/eu_vim_para_que_todos_tenham_vida.pdf',
-'missa_full_repo/Letras/Comunhão/pelos_prados.pdf',
-'missa_full_repo/Letras/Comunhão/presença_linda.pdf',
-'missa_full_repo/Letras/Comunhão/procuro_abrigo_nos_coracoes.pdf',
-'missa_full_repo/Letras/Comunhão/quando_teu_pai_revelou.pdf',
-'missa_full_repo/Letras/Comunhão/quem_nos_separara.pdf',
-'missa_full_repo/Letras/Comunhão/sacramento_da_comunhao.pdf',
-'missa_full_repo/Letras/Comunhão/sacramento_da_comunhão.pdf',
-'missa_full_repo/Letras/Comunhão/sim_eu_quero.pdf',
-'missa_full_repo/Letras/Comunhão/sonda_me.pdf',
-'missa_full_repo/Letras/Comunhão/vejam_eu_andei_pelas_vilas.pdf',
-'missa_full_repo/Letras/Comunhão/vem_eu_mostrarei.pdf',
-'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_dainos_a_paz.pdf',
-'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_que_tirais.pdf',
-'missa_full_repo/Letras/Cordeiro/cordeiro_do_maior.pdf',
-'missa_full_repo/Letras/Cordeiro/cordeiro_tende_piedade.pdf',
-'missa_full_repo/Letras/Entrada/a_biblia_e_a_palavra_de_deus.pdf',
-'missa_full_repo/Letras/Entrada/alegres_vamos_a_casa_do_pai.pdf',
-'missa_full_repo/Letras/Entrada/bendita_e_louvada_seja.pdf',
-'missa_full_repo/Letras/Entrada/bom_pastor.pdf',
-'missa_full_repo/Letras/Entrada/coração_santo.pdf',
-'missa_full_repo/Letras/Entrada/cristo_ressucitou_aleluia.pdf',
-'missa_full_repo/Letras/Entrada/deixa_a_luz_do_ceu_entrar.pdf',
-'missa_full_repo/Letras/Entrada/eis_me_aqui_senhor.pdf',
-'missa_full_repo/Letras/Entrada/eu_e_minha_casa_serviremos_ao_senhor.pdf',
-'missa_full_repo/Letras/Entrada/faco_novas_todas_as_coisas.pdf',
-'missa_full_repo/Letras/Entrada/hoje_e_tempo_de_louvar_a_deus.pdf',
-'missa_full_repo/Letras/Entrada/nos_estamos_aqui_reunidos.pdf',
-'missa_full_repo/Letras/Entrada/por_entre_aclamações.pdf',
-'missa_full_repo/Letras/Entrada/por_sua_morte_a_morte_viu_o_fim.pdf',
-'missa_full_repo/Letras/Entrada/te_amarei.pdf',
-'missa_full_repo/Letras/Entrada/toda_biblia_e_comunicacao.pdf',
-'missa_full_repo/Letras/Final/a_escolhida.pdf',
-'missa_full_repo/Letras/Final/anjos_de_deus.pdf',
-'missa_full_repo/Letras/Final/cristo_eh_a_felicidade.pdf',
-'missa_full_repo/Letras/Final/faco_novas_todas_as_coisas.pdf',
-'missa_full_repo/Letras/Final/imaculada_maria_de_deus.pdf',
-'missa_full_repo/Letras/Final/pelas_estradas_da_vida.pdf',
-'missa_full_repo/Letras/Final/segura_na_mao_de_deus_e_vai.pdf',
-'missa_full_repo/Letras/Gloria/a_ele_seja_a_gloria.pdf',
-'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas__rock_balada.pdf',
-'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas_shalom.pdf',
-'missa_full_repo/Letras/Gloria/gloria_a_deus_nos_altos_ceus.pdf',
-'missa_full_repo/Letras/Gloria/gloria_ao_pai_criador.pdf',
-'missa_full_repo/Letras/Gloria/gloria_deus_nas_alturas__eliana.pdf',
-'missa_full_repo/Letras/Gloria/gloria_nos_vos_damos_graças.pdf',
-'missa_full_repo/Letras/Gloria/gloria_vinde_cristaos.pdf',
-'missa_full_repo/Letras/Marianos/a_escolhida.pdf',
-'missa_full_repo/Letras/Marianos/ave_cheia_de_graca.pdf',
-'missa_full_repo/Letras/Marianos/consagracao_nossa_senhora.pdf',
-'missa_full_repo/Letras/Marianos/imaculada_maria_de_deus.pdf',
-'missa_full_repo/Letras/Marianos/maria_de_nazare.pdf',
-'missa_full_repo/Letras/Marianos/santa_mae_maria.pdf',
-'missa_full_repo/Letras/Ofertório/a_ti_meu_deus.pdf',
-'missa_full_repo/Letras/Ofertório/de_maos_estendidas.pdf',
-'missa_full_repo/Letras/Ofertório/meu_coracao_eh_para_ti.pdf',
-'missa_full_repo/Letras/Ofertório/minha_vida_tem_sentido.pdf',
-'missa_full_repo/Letras/Ofertório/muitos_graos_de_trigo.pdf',
-'missa_full_repo/Letras/Ofertório/os_dons_que_trago_aqui.pdf',
-'missa_full_repo/Letras/Ofertório/sabes_senhor.pdf',
-'missa_full_repo/Letras/Ofertório/um_coracao_para_amar.pdf',
-'missa_full_repo/Letras/Paz/esteja_sempre_com_voce.pdf',
-'missa_full_repo/Letras/Paz/irmao_minha_paz_eu_te_dou.pdf',
-'missa_full_repo/Letras/Paz/paz_paz_de_cristo.pdf',
-'missa_full_repo/Letras/Santo/hosane_hei_hosana_ha.pdf',
-'missa_full_repo/Letras/Santo/o_senhor_eh_santo.pdf',
-'missa_full_repo/Letras/Santo/santo_eh_o_senhor.pdf',
-'missa_full_repo/Letras/Santo/senhor_deus_do_universo.pdf'
-];
+        <div class="main-content">
+            <div class="categories-section" id="categoriesSection">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
 
-const order = ['Entrada', 'Ato Penitencial', 'Gloria', 'Aclamação', 'Ofertório', 'Santo', 'Cordeiro', 'Comunhão', 'Final'];
+            <div class="missa-hoje">
+                <h2 class="missa-title">Missa de Hoje</h2>
+                <div class="missa-list" id="missaList">
+                    <div class="empty-state">
+                        Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-const groupedFiles = files.reduce((acc, file) => {
-  const parts = file.split('/');
-  const category = parts[2];
-  const fileName = parts[3];
-  if (!acc[category]) {
-    acc[category] = [];
-  }
-  acc[category].push({fileName, filePath: file});
-  return acc;
-}, {});
+    <!-- Popup Modal -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h3 class="popup-title" id="popupTitle">Cântico</h3>
+                <button class="close-button" onclick="closePopup()">×</button>
+            </div>
+            <div class="popup-body">
+                <iframe class="popup-iframe" id="popupIframe" src=""></iframe>
+            </div>
+        </div>
+    </div>
 
-const sortedCategories = order.concat(Object.keys(groupedFiles).filter(c => !order.includes(c)));
+    <script>
+        const files = [
+            'missa_full_repo/Letras/Aclamação/a_minhalma_abrirei.pdf',
+            'missa_full_repo/Letras/Aclamação/a_vossa_palavra_senhor.pdf',
+            'missa_full_repo/Letras/Aclamação/aleluia_como_o_pai_me_amou.pdf',
+            'missa_full_repo/Letras/Aclamação/aleluia_quando_estamos_unidos.pdf',
+            'missa_full_repo/Letras/Aclamação/buscai_primeiro_o_reino_de_deus.pdf',
+            'missa_full_repo/Letras/Aclamação/como_sao_belos.pdf',
+            'missa_full_repo/Letras/Aclamação/eu_vim_para_escutar.pdf',
+            'missa_full_repo/Letras/Aclamação/louvor_e_gloria_a_ti_senhor.pdf',
+            'missa_full_repo/Letras/Aclamação/palavra_de_salvacao.pdf',
+            'missa_full_repo/Letras/Aclamação/quando_estamos_unidos.pdf',
+            'missa_full_repo/Letras/Aclamação/que_alegria_cristo_ressurgiu.pdf',
+            'missa_full_repo/Letras/Aclamação/vai_falar_no_evangelho.pdf',
+            'missa_full_repo/Letras/Adoração/a_alegria_esta_no_coracao.pdf',
+            'missa_full_repo/Letras/Adoração/a_nos_descei_divina_luz.pdf',
+            'missa_full_repo/Letras/Adoração/agua_viva.pdf',
+            'missa_full_repo/Letras/Adoração/amar_como_jesus_amou.pdf',
+            'missa_full_repo/Letras/Adoração/bate_o_sino.pdf',
+            'missa_full_repo/Letras/Adoração/eu_louvarei.pdf',
+            'missa_full_repo/Letras/Adoração/eu_quero_um_rio.pdf',
+            'missa_full_repo/Letras/Adoração/louvado_seja_o_meu_senhor.pdf',
+            'missa_full_repo/Letras/Adoração/louvemos_ao_senhor.pdf',
+            'missa_full_repo/Letras/Adoração/meu_mestre__a_minha_vida_e_do_mestre.pdf',
+            'missa_full_repo/Letras/Adoração/noite_feliz.pdf',
+            'missa_full_repo/Letras/Adoração/noites_traicoeiras.pdf',
+            'missa_full_repo/Letras/Adoração/nossa_senhora.pdf',
+            'missa_full_repo/Letras/Adoração/oracao_da_familia.pdf',
+            'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco.pdf',
+            'missa_full_repo/Letras/Adoração/oracao_de_sao_francisco_ii.pdf',
+            'missa_full_repo/Letras/Adoração/podes_reinar.pdf',
+            'missa_full_repo/Letras/Adoração/segura_na_mao_de_deus.pdf',
+            'missa_full_repo/Letras/Adoração/tao_sublime.pdf',
+            'missa_full_repo/Letras/Adoração/utopia.pdf',
+            'missa_full_repo/Letras/Amem/6.1 - Amem [ D+ ].pdf',
+            'missa_full_repo/Letras/Ato Penitencial/conheco_um_coracao.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/coracoes_arrependidos.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/eu_confesso.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/kyrie_eleison_senhor que viestes salvar.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/pelos_pecados_erros_passados.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/perdao_senhor.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/renovame.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_dos_corações_arrependidos.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/senhor_tende_piedade_perdoai_nossa_culpa.pdf',
+            'missa_full_repo/Letras/Ato Penitencial/senhor_vos_sois_o_caminho.pdf',
+            'missa_full_repo/Letras/Ação de graças/como_es_lindo.pdf',
+            'missa_full_repo/Letras/Ação de graças/deus_esta_aqui.pdf',
+            'missa_full_repo/Letras/Ação de graças/e_impossivel_nao_crer_em_ti.pdf',
+            'missa_full_repo/Letras/Ação de graças/espirito_santo.pdf',
+            'missa_full_repo/Letras/Ação de graças/invade_minhalma.pdf',
+            'missa_full_repo/Letras/Ação de graças/obrigado_senhor.pdf',
+            'missa_full_repo/Letras/Ação de graças/so_em_ti.pdf',
+            'missa_full_repo/Letras/Comunhão/a_barca.pdf',
+            'missa_full_repo/Letras/Comunhão/a_ti_meu_deus.pdf',
+            'missa_full_repo/Letras/Comunhão/antes_da_morte_e_ressurreicao.pdf',
+            'missa_full_repo/Letras/Comunhão/cantar_a_beleza_da_vida.pdf',
+            'missa_full_repo/Letras/Comunhão/cantar_um_canto_ensinado_por_deus.pdf',
+            'missa_full_repo/Letras/Comunhão/como_es_lindo.pdf',
+            'missa_full_repo/Letras/Comunhão/conheço_um_coração.pdf',
+            'missa_full_repo/Letras/Comunhão/da_cepa_brotou_a_rama.pdf',
+            'missa_full_repo/Letras/Comunhão/desamarrem_as_sandalias.pdf',
+            'missa_full_repo/Letras/Comunhão/estas_entre_nos.pdf',
+            'missa_full_repo/Letras/Comunhão/este_pranto_em_minhas_maos.pdf',
+            'missa_full_repo/Letras/Comunhão/eu_navegarei.pdf',
+            'missa_full_repo/Letras/Comunhão/eu_quis_comer_esta_ceia_agora.pdf',
+            'missa_full_repo/Letras/Comunhão/eu_vim_para_que_todos_tenham_vida.pdf',
+            'missa_full_repo/Letras/Comunhão/pelos_prados.pdf',
+            'missa_full_repo/Letras/Comunhão/presença_linda.pdf',
+            'missa_full_repo/Letras/Comunhão/procuro_abrigo_nos_coracoes.pdf',
+            'missa_full_repo/Letras/Comunhão/quando_teu_pai_revelou.pdf',
+            'missa_full_repo/Letras/Comunhão/quem_nos_separara.pdf',
+            'missa_full_repo/Letras/Comunhão/sacramento_da_comunhao.pdf',
+            'missa_full_repo/Letras/Comunhão/sacramento_da_comunhão.pdf',
+            'missa_full_repo/Letras/Comunhão/sim_eu_quero.pdf',
+            'missa_full_repo/Letras/Comunhão/sonda_me.pdf',
+            'missa_full_repo/Letras/Comunhão/vejam_eu_andei_pelas_vilas.pdf',
+            'missa_full_repo/Letras/Comunhão/vem_eu_mostrarei.pdf',
+            'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_dainos_a_paz.pdf',
+            'missa_full_repo/Letras/Cordeiro/cordeiro_de_deus_que_tirais.pdf',
+            'missa_full_repo/Letras/Cordeiro/cordeiro_do_maior.pdf',
+            'missa_full_repo/Letras/Cordeiro/cordeiro_tende_piedade.pdf',
+            'missa_full_repo/Letras/Entrada/a_biblia_e_a_palavra_de_deus.pdf',
+            'missa_full_repo/Letras/Entrada/alegres_vamos_a_casa_do_pai.pdf',
+            'missa_full_repo/Letras/Entrada/bendita_e_louvada_seja.pdf',
+            'missa_full_repo/Letras/Entrada/bom_pastor.pdf',
+            'missa_full_repo/Letras/Entrada/coração_santo.pdf',
+            'missa_full_repo/Letras/Entrada/cristo_ressucitou_aleluia.pdf',
+            'missa_full_repo/Letras/Entrada/deixa_a_luz_do_ceu_entrar.pdf',
+            'missa_full_repo/Letras/Entrada/eis_me_aqui_senhor.pdf',
+            'missa_full_repo/Letras/Entrada/eu_e_minha_casa_serviremos_ao_senhor.pdf',
+            'missa_full_repo/Letras/Entrada/faco_novas_todas_as_coisas.pdf',
+            'missa_full_repo/Letras/Entrada/hoje_e_tempo_de_louvar_a_deus.pdf',
+            'missa_full_repo/Letras/Entrada/nos_estamos_aqui_reunidos.pdf',
+            'missa_full_repo/Letras/Entrada/por_entre_aclamações.pdf',
+            'missa_full_repo/Letras/Entrada/por_sua_morte_a_morte_viu_o_fim.pdf',
+            'missa_full_repo/Letras/Entrada/te_amarei.pdf',
+            'missa_full_repo/Letras/Entrada/toda_biblia_e_comunicacao.pdf',
+            'missa_full_repo/Letras/Final/a_escolhida.pdf',
+            'missa_full_repo/Letras/Final/anjos_de_deus.pdf',
+            'missa_full_repo/Letras/Final/cristo_eh_a_felicidade.pdf',
+            'missa_full_repo/Letras/Final/faco_novas_todas_as_coisas.pdf',
+            'missa_full_repo/Letras/Final/imaculada_maria_de_deus.pdf',
+            'missa_full_repo/Letras/Final/pelas_estradas_da_vida.pdf',
+            'missa_full_repo/Letras/Final/segura_na_mao_de_deus_e_vai.pdf',
+            'missa_full_repo/Letras/Gloria/a_ele_seja_a_gloria.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas__rock_balada.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_a_deus_nas_alturas_shalom.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_a_deus_nos_altos_ceus.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_ao_pai_criador.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_deus_nas_alturas__eliana.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_nos_vos_damos_graças.pdf',
+            'missa_full_repo/Letras/Gloria/gloria_vinde_cristaos.pdf',
+            'missa_full_repo/Letras/Marianos/a_escolhida.pdf',
+            'missa_full_repo/Letras/Marianos/ave_cheia_de_graca.pdf',
+            'missa_full_repo/Letras/Marianos/consagracao_nossa_senhora.pdf',
+            'missa_full_repo/Letras/Marianos/imaculada_maria_de_deus.pdf',
+            'missa_full_repo/Letras/Marianos/maria_de_nazare.pdf',
+            'missa_full_repo/Letras/Marianos/santa_mae_maria.pdf',
+            'missa_full_repo/Letras/Ofertório/a_ti_meu_deus.pdf',
+            'missa_full_repo/Letras/Ofertório/de_maos_estendidas.pdf',
+            'missa_full_repo/Letras/Ofertório/meu_coracao_eh_para_ti.pdf',
+            'missa_full_repo/Letras/Ofertório/minha_vida_tem_sentido.pdf',
+            'missa_full_repo/Letras/Ofertório/muitos_graos_de_trigo.pdf',
+            'missa_full_repo/Letras/Ofertório/os_dons_que_trago_aqui.pdf',
+            'missa_full_repo/Letras/Ofertório/sabes_senhor.pdf',
+            'missa_full_repo/Letras/Ofertório/um_coracao_para_amar.pdf',
+            'missa_full_repo/Letras/Paz/esteja_sempre_com_voce.pdf',
+            'missa_full_repo/Letras/Paz/irmao_minha_paz_eu_te_dou.pdf',
+            'missa_full_repo/Letras/Paz/paz_paz_de_cristo.pdf',
+            'missa_full_repo/Letras/Santo/hosane_hei_hosana_ha.pdf',
+            'missa_full_repo/Letras/Santo/o_senhor_eh_santo.pdf',
+            'missa_full_repo/Letras/Santo/santo_eh_o_senhor.pdf',
+            'missa_full_repo/Letras/Santo/senhor_deus_do_universo.pdf'
+        ];
 
-const container = document.createElement('div');
+        const order = ['Entrada', 'Ato Penitencial', 'Gloria', 'Aclamação', 'Ofertório', 'Santo', 'Cordeiro', 'Comunhão', 'Final'];
 
-sortedCategories.forEach(category => {
-  if (groupedFiles[category]) {
-    const details = document.createElement('details');
-    const summary = document.createElement('summary');
-    summary.textContent = category;
-    details.appendChild(summary);
+        let groupedFiles = {};
+        let allSongs = [];
+        let missaSongs = [];
 
-    const ul = document.createElement('ul');
-    groupedFiles[category].forEach(file => {
-      const li = document.createElement('li');
-      const a = document.createElement('a');
-      a.href = `javascript:openPdf('${file.filePath.replace('missa_full_repo/', '')}')`;
-      a.textContent = file.fileName;
-      li.appendChild(a);
-      ul.appendChild(li);
-    });
+        // Initialize the application
+        function init() {
+            processFiles();
+            renderCategories();
+            setupSearch();
+            setupDragAndDrop();
+            loadMissaFromStorage();
+        }
 
-    details.appendChild(ul);
-    container.appendChild(details);
-  }
-});
+        // Process files into categories
+        function processFiles() {
+            groupedFiles = files.reduce((acc, file) => {
+                const parts = file.split('/');
+                const category = parts[2];
+                const fileName = parts[3].replace('.pdf', '').replace(/_/g, ' ');
+                
+                if (!acc[category]) {
+                    acc[category] = [];
+                }
+                
+                const song = {
+                    fileName,
+                    filePath: file,
+                    category,
+                    id: Date.now() + Math.random()
+                };
+                
+                acc[category].push(song);
+                allSongs.push(song);
+                return acc;
+            }, {});
+        }
 
-document.body.appendChild(container);
+        // Render categories
+        function renderCategories() {
+            const container = document.getElementById('categoriesSection');
+            const sortedCategories = order.concat(Object.keys(groupedFiles).filter(c => !order.includes(c)));
 
-</script>
+            container.innerHTML = '';
+
+            sortedCategories.forEach(category => {
+                if (groupedFiles[category]) {
+                    const categoryCard = createCategoryCard(category, groupedFiles[category]);
+                    container.appendChild(categoryCard);
+                }
+            });
+        }
+
+        // Create category card
+        function createCategoryCard(category, songs) {
+            const card = document.createElement('div');
+            card.className = 'category-card';
+            card.innerHTML = `
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-title">${category}</span>
+                    <span class="category-arrow">▶</span>
+                </div>
+                <div class="category-content">
+                    <div class="song-list">
+                        ${songs.map(song => `
+                            <div class="song-item" data-song='${JSON.stringify(song)}'>
+                                <span class="song-name" onclick="openSong('${song.filePath}', '${song.fileName}')">${song.fileName}</span>
+                                <button class="add-button" onclick="addToMissa(event, '${song.id}')">+</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Toggle category expansion
+        function toggleCategory(header) {
+            const card = header.parentElement;
+            card.classList.toggle('expanded');
+        }
+
+        // Open song in popup
+        function openSong(filePath, fileName) {
+            const popup = document.getElementById('popupOverlay');
+            const iframe = document.getElementById('popupIframe');
+            const title = document.getElementById('popupTitle');
+            
+            title.textContent = fileName;
+            iframe.src = filePath.replace('missa_full_repo/', '');
+            popup.style.display = 'flex';
+        }
+
+        // Close popup
+        function closePopup() {
+            const popup = document.getElementById('popupOverlay');
+            const iframe = document.getElementById('popupIframe');
+            
+            popup.style.display = 'none';
+            iframe.src = '';
+        }
+
+        // Add song to missa
+        function addToMissa(event, songId) {
+            event.stopPropagation();
+            const song = allSongs.find(s => s.id == songId);
+            if (song && !missaSongs.find(ms => ms.id == songId)) {
+                missaSongs.push({...song, missaId: Date.now() + Math.random()});
+                renderMissa();
+                saveMissaToStorage();
+            }
+        }
+
+        // Remove song from missa
+        function removeFromMissa(missaId) {
+            missaSongs = missaSongs.filter(s => s.missaId != missaId);
+            renderMissa();
+            saveMissaToStorage();
+        }
+
+        // Render missa list
+        function renderMissa() {
+            const container = document.getElementById('missaList');
+            
+            if (missaSongs.length === 0) {
+                container.innerHTML = '<div class="empty-state">Arraste os cânticos aqui ou clique no botão [+] para adicionar à missa de hoje</div>';
+                return;
+            }
+
+            container.innerHTML = missaSongs.map((song, index) => `
+                <div class="missa-item" draggable="true" data-index="${index}" data-missa-id="${song.missaId}">
+                    <span onclick="openSong('${song.filePath.replace('missa_full_repo/', '')}', '${song.fileName}')" style="cursor: pointer; flex: 1;">${song.fileName}</span>
+                    <button class="remove-button" onclick="removeFromMissa('${song.missaId}')">×</button>
+                </div>
+            `).join('');
+
+            setupMissaDragAndDrop();
+        }
+
+        // Setup search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                filterSongs(query);
+            });
+        }
+
+        // Filter songs based on search
+        function filterSongs(query) {
+            const categoryCards = document.querySelectorAll('.category-card');
+            
+            categoryCards.forEach(card => {
+                const songItems = card.querySelectorAll('.song-item');
+                let hasVisibleSongs = false;
+
+                songItems.forEach(item => {
+                    const songName = item.querySelector('.song-name').textContent.toLowerCase();
+                    const isVisible = songName.includes(query);
+                    item.style.display = isVisible ? 'flex' : 'none';
+                    if (isVisible) hasVisibleSongs = true;
+                });
+
+                card.style.display = hasVisibleSongs || query === '' ? 'block' : 'none';
+                if (query && hasVisibleSongs) {
+                    card.classList.add('expanded');
+                }
+            });
+        }
+
+        // Setup drag and drop for adding songs to missa
+        function setupDragAndDrop() {
+            const missaList = document.getElementById('missaList');
+
+            // Allow drop on missa list
+            missaList.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                missaList.classList.add('drag-over');
+            });
+
+            missaList.addEventListener('dragleave', () => {
+                missaList.classList.remove('drag-over');
+            });
+
+            missaList.addEventListener('drop', (e) => {
+                e.preventDefault();
+                missaList.classList.remove('drag-over');
+                
+                const songData = e.dataTransfer.getData('text/plain');
+                if (songData) {
+                    try {
+                        const song = JSON.parse(songData);
+                        if (!missaSongs.find(ms => ms.id == song.id)) {
+                            missaSongs.push({...song, missaId: Date.now() + Math.random()});
+                            renderMissa();
+                            saveMissaToStorage();
+                        }
+                    } catch (error) {
+                        console.error('Error parsing song data:', error);
+                    }
+                }
+            });
+
+            // Make song items draggable
+            document.addEventListener('dragstart', (e) => {
+                if (e.target.closest('.song-item')) {
+                    const songItem = e.target.closest('.song-item');
+                    const songData = songItem.getAttribute('data-song');
+                    e.dataTransfer.setData('text/plain', songData);
+                }
+            });
+        }
+
+        // Setup drag and drop for reordering missa songs
+        function setupMissaDragAndDrop() {
+            const missaItems = document.querySelectorAll('.missa-item');
+            
+            missaItems.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-index'));
+                    e.target.classList.add('dragging');
+                });
+
+                item.addEventListener('dragend', (e) => {
+                    e.target.classList.remove('dragging');
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                });
+
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const targetIndex = parseInt(e.target.getAttribute('data-index'));
+                    
+                    if (draggedIndex !== targetIndex) {
+                        const draggedSong = missaSongs[draggedIndex];
+                        missaSongs.splice(draggedIndex, 1);
+                        missaSongs.splice(targetIndex, 0, draggedSong);
+                        renderMissa();
+                        saveMissaToStorage();
+                    }
+                });
+            });
+        }
+
+        // Save missa to localStorage
+        function saveMissaToStorage() {
+            localStorage.setItem('missaHoje', JSON.stringify(missaSongs));
+        }
+
+        // Load missa from localStorage
+        function loadMissaFromStorage() {
+            const saved = localStorage.getItem('missaHoje');
+            if (saved) {
+                try {
+                    missaSongs = JSON.parse(saved);
+                    renderMissa();
+                } catch (error) {
+                    console.error('Error loading missa from storage:', error);
+                }
+            }
+        }
+
+        // Close popup when clicking outside
+        document.getElementById('popupOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                closePopup();
+            }
+        });
+
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
 </body>
 </html>
-
 
