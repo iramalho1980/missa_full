@@ -167,7 +167,7 @@
         }
 
         .category-card.expanded .category-content {
-            max-height: 250px;
+            max-height: 1000px; /* Valor alto para permitir expansão total */
         }
 
         .song-list {
@@ -989,7 +989,7 @@
 
                 card.style.display = hasVisibleSongs || query === '' ? 'block' : 'none';
                 if (query && hasVisibleSongs) {
-                    card.classList.add('expanded');
+       
                 }
             });
         }
